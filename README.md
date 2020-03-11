@@ -1,0 +1,2 @@
+# gameSvr
+A game server.
