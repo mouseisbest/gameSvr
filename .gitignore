@@ -35,3 +35,4 @@
 *.pb.h
 *.pb.cc
 build
+*.swp
