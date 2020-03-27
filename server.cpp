@@ -8,7 +8,7 @@ using namespace std;
 #include <grpcpp/server_context.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "protocol/cs.grpc.pb.h"
+#include "cs.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
