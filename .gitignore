@@ -31,8 +31,11 @@
 *.out
 *.app
 
+*~
 *.~
 *.pb.h
 *.pb.cc
 build
 *.swp
+server
+client
