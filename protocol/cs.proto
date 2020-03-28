@@ -20,9 +20,35 @@ message EquationResult {
 }
 
 
-
-message CSMessage {
-    int32 command = 1;
+enum CmdID {
+    CS_CMD_NONE = 0;
+    CS_CMD_LOGIN = 1;
+    CS_CMD_MOVE= 2;
 }
 
 
+message CSLoginC {
+    string UserName = 1;
+    string PassWord = 2;
+}
+
+message CSLoginS {
+    int64 UserID = 1;
+}
+
+// 客户端消息
+message CSMessageC {
+    int32 Cmd = 1;
+    oneof Data {
+        CSLoginC LoginInfo = 2;
+    }
+}
+
+// 服务器端消息
+message CSMessageS {
+    int32 Cmd = 1;
+    int32 Ret = 2;
+    oneof Data {
+        CSLoginS LoginResult = 3;        
+    }
+}
