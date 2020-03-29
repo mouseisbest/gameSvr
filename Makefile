@@ -43,7 +43,7 @@ all: system-check client server
 client: cs.pb.o cs.grpc.pb.o client.o 
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: cs.pb.o cs.grpc.pb.o server.o
+server: cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

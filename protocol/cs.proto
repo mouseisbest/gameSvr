@@ -3,20 +3,7 @@ syntax = "proto3";
 package gameSvr;
 
 service GameServer {
-
-    rpc MathOp(Equation) returns (EquationResult) {}
-}
-
-
-message Equation {
-    int32 num1 = 1;
-    int32 num2 = 2;
-    int32 op = 3;
-}
-
-message EquationResult {
-    Equation equation = 1;
-    int32 result = 2;
+    rpc ClientMsgProcessor(stream CSMessageC) returns (stream CSMessageS) {}
 }
 
 
