@@ -1,3 +1,6 @@
+#ifndef __SERVER_CS_PROCESSOR_H__
+#define __SERVER_CS_PROCESSOR_H__
+
 
 #include <chrono>
 #include <grpc/grpc.h>
@@ -32,4 +35,4 @@ public:
 
 int StartServer();
 
-
+#endif

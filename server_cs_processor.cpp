@@ -1,20 +1,33 @@
+#include "cs.pb.h"
 #include "server_cs_processor.h"
+#include "server_user.h"
 
-
+using gameSvr::CmdID;
 
 Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
-        ServerReaderWriter<CSMessageS, CSMessageC>* stream) {
-
-        CSMessageC msg;
-        while (stream->Read(&msg)) {
-            ;
+    ServerReaderWriter<CSMessageS, CSMessageC>* stream) 
+{
+    int iRet = -1;
+    CSMessageC msg;
+    while (stream->Read(&msg)) {
+        switch (msg.cmd())
+        {
+        case CmdID::CS_CMD_LOGIN:
+            {
+                auto loginInfo = msg.mutable_logininfo();
+                iRet = server_user_login(loginInfo->username(), 
+                    loginInfo->password());
+                break;
+            }
+        default:
+            break;
         }
-        return Status::OK;
+    }
+    return Status::OK;
 }
 
 int StartServer()
 {
-
     std::string server_address("0.0.0.0:50051");
     GameServerImpl service;
     ServerBuilder builder;

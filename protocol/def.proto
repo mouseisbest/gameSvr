@@ -1,1 +1,13 @@
 syntax = "proto3";
+
+package gameSvr;
+
+message RoleBaseInfo {
+    int64       Guid = 1;
+    string      UserName = 2;
+}
+
+
+message Role {
+    RoleBaseInfo        BaseInfo = 1;
+}
