@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package gameSvr;
+
+
+enum Direction{
+    DIRECTION_NORTH         = 0;
+    DIRECTION_SOUTH         = 1;
+    DIRECTION_WEST          = 2;
+    DIRECTION_EAST          = 3;
+    DIRECTION_NORTHWEST     = 4;
+    DIRECTION_NORTHEAST     = 5;
+    DIRECTION_SOUTHWEST     = 6;
+    DIRECTION_SOUTHEAST     = 7;
+}
+
+

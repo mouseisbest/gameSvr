@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+import "key.proto";
+import "def.proto";
+
 package gameSvr;
 
 service GameServer {
@@ -8,20 +11,35 @@ service GameServer {
 
 
 enum CmdID {
-    CS_CMD_NONE = 0;
-    CS_CMD_LOGIN = 1;
-    CS_CMD_MOVE= 2;
+    CS_CMD_NONE         = 0;
+    CS_CMD_LOGIN        = 1;
+    CS_CMD_MOVE         = 2;
+    CS_CMD_MAP_INFO     = 3;
 }
 
 
 message CSLoginC {
-    string UserName = 1;
-    string PassWord = 2;
+    string UserName     = 1;
+    string PassWord     = 2;
 }
 
 message CSLoginS {
-    int64 UserID = 1;
+    int64 UserID        = 1;
 }
+
+message CSMoveC {
+    Direction Dir       = 1;
+}
+    
+message CSMoveS {
+    Direction Dir       = 1;
+    Point     Pos    = 2;
+}
+
+
+
+
+
 
 // 客户端消息
 message CSMessageC {

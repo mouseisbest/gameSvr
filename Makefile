@@ -40,10 +40,10 @@ vpath %.proto $(PROTOS_PATH)
 
 all: system-check client server
 
-client: cs.pb.o cs.grpc.pb.o client.o 
+client: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o client.o 
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: cs.pb.o cs.grpc.pb.o def.pb.o server.o server_cs_processor.o server_user.o
+server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto
