@@ -9,6 +9,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
 {
     int iRet = -1;
     CSMessageC msg;
+    CSMessageS ret;
     while (stream->Read(&msg)) {
         switch (msg.cmd())
         {
@@ -17,6 +18,13 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 auto loginInfo = msg.mutable_logininfo();
                 iRet = server_user_login(loginInfo->username(), 
                     loginInfo->password());
+                Player* player = server_user_get_by_name(loginInfo->username());
+                if (player->has_baseinfo())
+                {
+                    ret.set_cmd(msg.cmd());
+                    ret.mutable_loginresult()->set_userid(12345);
+                    stream->Write(ret);                    
+                }
                 break;
             }
         default:

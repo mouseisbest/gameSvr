@@ -1,1 +1,8 @@
 syntax = "proto3";
+
+
+package gameSvr;
+
+
+message Map {
+}
