@@ -8,7 +8,7 @@
 
 using std::map;
 
-map<string, Role> g_userList;
+map<string, Player> g_userList;
 
 int server_user_login(string user_name, string password)
 {
@@ -18,13 +18,13 @@ int server_user_login(string user_name, string password)
         return 0;
     }
     // 创建用户数据
-    Role role;
-    role.mutable_baseinfo()->set_username(user_name);
-    g_userList.insert(std::make_pair(user_name, role));
+    Player player;
+    player.mutable_baseinfo()->set_username(user_name);
+    g_userList.insert(std::make_pair(user_name, player));
     return 0;
 }
 
-Role server_user_get_by_name(string user_name)
+Player* server_user_get_by_name(string user_name)
 {
-    return g_userList.at(user_name);
+    return &g_userList.at(user_name);
 }

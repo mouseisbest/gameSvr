@@ -6,8 +6,13 @@ package gameSvr;
 
 
 message BaseInfo {
-    int64       Guid = 1;
+    int64       Guid     = 1;
     string      UserName = 2;
+}
+
+message Point {
+    int32       X       = 1;
+    int32       Y       = 2;
 }
 
 message BattleInfo {
@@ -18,19 +23,25 @@ message BattleInfo {
     int32       Defense = 5;
 }
 
-message Point {
-    int32       X       = 1;
-    int32       Y       = 2;
-}
-
 message PositionInfo {
     Point       Pos     = 1;
 }
 
+message Object {
+    BattleInfo      BattleInfo  = 1;
+    PositionInfo    Position    = 2;
+}
 
+message Bullet {
+    Object          Object      = 1;
+}
 
-message Role {
-    BaseInfo        BaseInfo    = 1;
+message Tank {
+    Object          Object      = 1;
     BattleInfo      BattleInfo  = 2;
-    PositionInfo    Position    = 3;
+}
+
+message Player {
+    BaseInfo        BaseInfo    = 1;
+    Tank            Tank        = 2;
 }
