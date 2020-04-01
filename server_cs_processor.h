@@ -33,6 +33,6 @@ public:
         std::mutex mu_;
 };
 
-int StartServer();
+int start_server();
 
 #endif

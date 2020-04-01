@@ -10,8 +10,7 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# See the License for the specific language governing permissions and # limitations under the License.
 #
 
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
@@ -43,7 +42,7 @@ all: system-check client server
 client: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o client.o 
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o
+server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o server_tick.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

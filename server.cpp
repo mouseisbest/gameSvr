@@ -1,7 +1,7 @@
 #include <iostream>
+#include "server_tick.h"
 #include "server_cs_processor.h"
 
-using namespace std;
 
 int main(int argc, char **argv)
 {
@@ -9,6 +9,7 @@ int main(int argc, char **argv)
     {
         return -1;
     }
-    StartServer();
+    start_server();
+    server_tick();
     return 0;
 }

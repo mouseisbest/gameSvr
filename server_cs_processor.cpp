@@ -1,8 +1,24 @@
+
+#include <thread>
+
 #include "cs.pb.h"
 #include "server_cs_processor.h"
 #include "server_user.h"
 
 using gameSvr::CmdID;
+auto g_networkFun = []() {
+    std::string server_address("0.0.0.0:50051");
+    GameServerImpl service;
+    ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.RegisterService(&service);
+    std::unique_ptr<Server> server(builder.BuildAndStart());
+    std::cout << "Server listening on " << server_address << std::endl;
+    server->Wait();
+};
+std::thread g_networkThread;
+
+
 
 Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     ServerReaderWriter<CSMessageS, CSMessageC>* stream) 
@@ -10,7 +26,9 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     int iRet = -1;
     CSMessageC msg;
     CSMessageS ret;
-    while (stream->Read(&msg)) {
+    while (stream->Read(&msg)) 
+    {
+        printf("incoming msg (%d)\n", msg.cmd());
         switch (msg.cmd())
         {
         case CmdID::CS_CMD_LOGIN:
@@ -25,6 +43,8 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                     ret.mutable_loginresult()->set_userid(12345);
                     stream->Write(ret);                    
                 }
+                ret.set_ret(666);
+                stream->Write(ret);                    
                 break;
             }
         default:
@@ -34,17 +54,8 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     return Status::OK;
 }
 
-int StartServer()
+int start_server()
 {
-    std::string server_address("0.0.0.0:50051");
-    GameServerImpl service;
-    ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
-    std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
-    server->Wait();
-
-
+    g_networkThread = std::thread(g_networkFun);
     return 0;
 }
