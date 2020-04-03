@@ -42,7 +42,7 @@ all: system-check client server
 client: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o client.o 
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o server_tick.o
+server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o server_tick.o time_tool.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

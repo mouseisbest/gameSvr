@@ -5,5 +5,4 @@
 
 int server_tick();
 
-
 #endif
