@@ -12,8 +12,12 @@ map<string, Player> g_userList;
 
 int server_user_login(string user_name, string password)
 {
-    auto user = g_userList.at(user_name);
-    if (user.has_baseinfo())
+    if (!user_name.length() /*|| !password.length()*/)
+    {
+        return -1;
+    }
+    auto user = g_userList.find(user_name);
+    if (user != g_userList.end())
     {
         return 0;
     }
@@ -26,5 +30,10 @@ int server_user_login(string user_name, string password)
 
 Player* server_user_get_by_name(string user_name)
 {
-    return &g_userList.at(user_name);
+    auto user = g_userList.find(user_name);
+    if (user == g_userList.end())
+    {
+        return NULL;
+    }
+    return &user->second;
 }

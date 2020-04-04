@@ -44,16 +44,18 @@ message CSMoveS {
 // 客户端消息
 message CSMessageC {
     int32 Cmd = 1;
+    int32 Seq = 2;
     oneof Data {
-        CSLoginC LoginInfo = 2;
+        CSLoginC LoginInfo = 10;
     }
 }
 
 // 服务器端消息
 message CSMessageS {
     int32 Cmd = 1;
-    int32 Ret = 2;
+    int32 Seq = 2;
+    int32 Ret = 3;
     oneof Data {
-        CSLoginS LoginResult = 3;        
+        CSLoginS LoginResult = 10;        
     }
 }

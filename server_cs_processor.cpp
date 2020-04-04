@@ -1,11 +1,16 @@
 
 #include <thread>
+#include <iostream>
 
 #include "cs.pb.h"
 #include "server_cs_processor.h"
 #include "server_user.h"
 
 using gameSvr::CmdID;
+using std::cout;
+using std::endl;
+
+
 auto g_networkFun = []() {
     std::string server_address("0.0.0.0:50051");
     GameServerImpl service;
@@ -37,14 +42,15 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 iRet = server_user_login(loginInfo->username(), 
                     loginInfo->password());
                 Player* player = server_user_get_by_name(loginInfo->username());
-                if (player->has_baseinfo())
+                if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
                     ret.mutable_loginresult()->set_userid(12345);
-                    stream->Write(ret);                    
+                    //stream->Write(ret);                    
                 }
                 ret.set_ret(666);
-                stream->Write(ret);                    
+                int iRet = stream->Write(ret);
+                cout << "write to client ret:" << iRet << endl;
                 break;
             }
         case CmdID::CS_CMD_MOVE:
@@ -55,6 +61,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
             break;
         }
     }
+    cout << "Server network loop stopped." << endl;
     return Status::OK;
 }
 

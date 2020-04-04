@@ -39,13 +39,13 @@ void TankGameClient::StartConnection()
         {
             CSMessageC msg;
             msg.set_cmd(CmdID::CS_CMD_LOGIN);       
-            stream->Write(msg);
-            cout << "Sent message" << endl;
+            int iRet = stream->Write(msg);
+            cout << "Sent message result:" << iRet  << endl;
 
             sleep(3);
             CSMessageS response;
-            stream->Read(&response);
-            cout << "Recv Message: userid:" << response.mutable_loginresult()->userid() 
+            iRet = stream->Read(&response);
+            cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->userid() 
             << ",ret:" << response.ret() << endl;
         }});
         writer.join();
