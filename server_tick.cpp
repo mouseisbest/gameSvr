@@ -9,11 +9,22 @@
 
 static int server_tick_100ms(timeval *now)
 {
-    if (now && now->tv_usec % 10000 != 0)
+    if (!now)
+    {
+        return 0;
+    }
+    static timeval last_tv = {};
+    if (0 == last_tv.tv_sec)
+    {
+        memcpy(&last_tv, now, sizeof(last_tv));
+    }
+
+    if (time_diff_ms(now, &last_tv) < 100)
     {
         return 0;
     }
 
+    memcpy(&last_tv, now, sizeof(last_tv));
     return 0;
 }
 
@@ -36,19 +47,28 @@ static int server_tick_1s(timeval *now)
     }
 
     memcpy(&last_tv, now, sizeof(last_tv));
-    printf("1\n");
-
     return 0;
 }
 
 
 static int server_tick_1min(timeval *now)
 {
-    if (now && now->tv_usec % 60000000 != 0)
+    if (!now)
+    {
+        return 0;
+    }
+    static timeval last_tv = {};
+    if (0 == last_tv.tv_sec)
+    {
+        memcpy(&last_tv, now, sizeof(last_tv));
+    }
+
+    if (time_diff_ms(now, &last_tv) < 60000)
     {
         return 0;
     }
 
+    memcpy(&last_tv, now, sizeof(last_tv));
     return 0;
 }
 

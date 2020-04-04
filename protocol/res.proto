@@ -3,6 +3,13 @@ syntax = "proto3";
 
 package gameSvr;
 
+enum res_enum {
+    option allow_alias                  = true;
+    RES_ENUM_NULL                       = 0;
+    MAX_MAP_WIDTH                       = 40;
+    MAX_MAP_HEIGHT                      = 40;
+
+}
 
 message Map {
 }

@@ -25,10 +25,10 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
 {
     int iRet = -1;
     CSMessageC msg;
-    CSMessageS ret;
     while (stream->Read(&msg)) 
     {
         printf("incoming msg (%d)\n", msg.cmd());
+        CSMessageS ret;
         switch (msg.cmd())
         {
         case CmdID::CS_CMD_LOGIN:
@@ -45,6 +45,10 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 }
                 ret.set_ret(666);
                 stream->Write(ret);                    
+                break;
+            }
+        case CmdID::CS_CMD_MOVE:
+            {
                 break;
             }
         default:

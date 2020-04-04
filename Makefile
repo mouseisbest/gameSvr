@@ -39,10 +39,12 @@ vpath %.proto $(PROTOS_PATH)
 
 all: system-check client server
 
-client: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o client.o 
+client: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o res.pb.o client_cs_processor.o \
+		client_display.o client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o server.o server_cs_processor.o server_user.o server_tick.o time_tool.o
+server: key.pb.o def.pb.o cs.pb.o cs.grpc.pb.o res.pb.o server.o server_cs_processor.o \
+		server_user.o server_tick.o time_tool.o server_map.o server_object.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

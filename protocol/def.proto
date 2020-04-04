@@ -4,6 +4,13 @@ syntax = "proto3";
 import "key.proto";
 package gameSvr;
 
+/*enum def_enum {
+    option allow_alias                  = true;
+    
+
+}*/
+
+
 
 message BaseInfo {
     int64       Guid     = 1;
