@@ -11,5 +11,10 @@ enum res_enum {
 
 }
 
+message MapLine {
+    repeated int32 cell                 = 1;
+}
+
 message Map {
+    repeated MapLine line               = 1;
 }

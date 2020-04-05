@@ -49,6 +49,8 @@ message Tank {
 }
 
 message Player {
-    BaseInfo        BaseInfo    = 1;
-    Tank            Tank        = 2;
+    BaseInfo        BaseInfo            = 1;
+    Tank            Tank                = 2;
+    int64           LastUpdateTime      = 3;
+    int64           Token               = 4;        // 标志当前登录的随机数 
 }

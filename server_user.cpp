@@ -8,6 +8,7 @@
 
 using std::map;
 
+uint64_t g_iUserCount;
 map<string, Player> g_userList;
 
 int server_user_login(string user_name, string password)
@@ -24,6 +25,7 @@ int server_user_login(string user_name, string password)
     // 创建用户数据
     Player player;
     player.mutable_baseinfo()->set_username(user_name);
+    player.set_token(g_iUserCount++);
     g_userList.insert(std::make_pair(user_name, player));
     return 0;
 }
