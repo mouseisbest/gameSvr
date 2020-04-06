@@ -15,6 +15,7 @@ enum CmdID {
     CS_CMD_LOGIN        = 1;
     CS_CMD_MOVE         = 2;
     CS_CMD_MAP_INFO     = 3;
+    CS_CMD_FIRE         = 4;
 }
 
 
@@ -36,7 +37,9 @@ message CSMoveS {
     Point     Pos       = 2;
 }
 
-
+message CSFireC {
+    Direction Dir       = 1;
+}
 
 
 
@@ -47,7 +50,9 @@ message CSMessageC {
     int32 Seq           = 2;
     int64 Token         = 3;
     oneof Data {
-        CSLoginC LoginInfo = 10;
+        CSLoginC LoginInfo  = 10;
+        CSMoveC  Move       = 11;
+        CSFireC  Fire       = 12;
     }
 }
 

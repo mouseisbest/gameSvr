@@ -4,8 +4,10 @@
 #include <string.h>
 #include "time_tool.h"
 #include "server_tick.h"
+#include "server_object.h"
 
 #define TICK_INTERVAL_US 1000
+
 
 static int server_tick_100ms(timeval *now)
 {
@@ -23,6 +25,8 @@ static int server_tick_100ms(timeval *now)
     {
         return 0;
     }
+    
+    server_object_tick();
 
     memcpy(&last_tv, now, sizeof(last_tv));
     return 0;

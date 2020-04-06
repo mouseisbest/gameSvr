@@ -4,12 +4,14 @@ syntax = "proto3";
 import "key.proto";
 package gameSvr;
 
-/*enum def_enum {
+enum def_enum {
     option allow_alias                  = true;
+    DEF_ENUM_NULL                       = 0;
+    MAX_PLAYER_NUM                      = 10;
+    MAX_MAP_NUM                         = 10;
     
 
-}*/
-
+}
 
 
 message BaseInfo {
@@ -23,34 +25,51 @@ message Point {
 }
 
 message BattleInfo {
-    int64       HP      = 1;
-    Direction   Dir     = 2;
-    int32       Speed   = 3;
-    int32       Damage  = 4;
-    int32       Defense = 5;
+    int64       HP                  = 1;
+    Direction   Dir                 = 2; 
+    int32       Speed               = 3;
+    int32       Damage              = 4;
+    int32       Defense             = 5;
+    int64       LastFireTime        = 6;
 }
 
 message PositionInfo {
     Point       Pos     = 1;
 }
 
-message Object {
-    BattleInfo      BattleInfo  = 1;
-    PositionInfo    Position    = 2;
+enum ObjType {
+    OBJ_TYPE_NULL               = 0;
+    OBJ_TYPE_TANK               = 1;
+    OBJ_TYPE_BULLET             = 2;
 }
 
+
+
 message Bullet {
-    Object          Object      = 1;
+    Direction   Dir     = 1; 
+    int32       Speed   = 2;
 }
 
 message Tank {
-    Object          Object      = 1;
     BattleInfo      BattleInfo  = 2;
 }
 
+
+message Object {
+    ObjType         Type                = 1;
+    int64           ObjID               = 2;
+    PositionInfo    Position            = 3;
+    oneof           Data {
+        Tank        Tank                = 10;
+        Bullet      Bullet              = 11;
+    }
+}
+
+
 message Player {
-    BaseInfo        BaseInfo            = 1;
-    Tank            Tank                = 2;
+    int64           ObjID               = 1;
+    BaseInfo        BaseInfo            = 2;
     int64           LastUpdateTime      = 3;
     int64           Token               = 4;        // 标志当前登录的随机数 
+    int64           Context             = 5;        // GRPC客户端句柄
 }

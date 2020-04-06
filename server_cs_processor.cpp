@@ -32,6 +32,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     CSMessageC msg;
     while (stream->Read(&msg)) 
     {
+        std::unique_lock<std::mutex> lock(mu_); 
         printf("incoming msg (%d)\n", msg.cmd());
         CSMessageS ret;
         switch (msg.cmd())
@@ -45,11 +46,11 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
-                    ret.mutable_loginresult()->set_userid(12345);
-                    //stream->Write(ret);                    
+                    ret.mutable_loginresult()->set_token(12345);
                 }
                 ret.set_ret(666);
                 int iRet = stream->Write(ret);
+                player->set_context((int64_t)stream);
                 cout << "write to client ret:" << iRet << endl;
                 break;
             }
@@ -64,6 +65,16 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     cout << "Server network loop stopped." << endl;
     return Status::OK;
 }
+
+
+void GameServerImpl::GetMutex()
+{
+}
+void GameServerImpl::ReleaseMutex()
+{
+}
+
+
 
 int start_server()
 {

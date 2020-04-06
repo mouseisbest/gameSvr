@@ -21,6 +21,9 @@ using gameSvr::GameServer;
 using gameSvr::CSMessageS;
 using gameSvr::CSMessageC;
 using std::chrono::system_clock;
+typedef ServerReaderWriter<CSMessageS, CSMessageC>* LPCLIENTCONTEXT;
+
+
 class GameServerImpl final : public GameServer::Service
 {
 public:
@@ -29,8 +32,11 @@ public:
         ServerReaderWriter<CSMessageS, CSMessageC>* stream) override;
 
 
-    private:
-        std::mutex mu_;
+    void GetMutex();
+    void ReleaseMutex();
+
+private:
+    std::mutex mu_;
 };
 
 int start_server();
