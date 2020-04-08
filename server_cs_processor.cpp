@@ -43,14 +43,17 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 iRet = server_user_login(loginInfo->username(), 
                     loginInfo->password());
                 Player* player = server_user_get_by_name(loginInfo->username());
+                // debug
+                cout << "incoming username:" << loginInfo->username() << ", password" << 
+                    loginInfo->password() << endl;
                 if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
                     ret.mutable_loginresult()->set_token(12345);
+                    player->set_context((int64_t)stream);
                 }
                 ret.set_ret(666);
                 int iRet = stream->Write(ret);
-                player->set_context((int64_t)stream);
                 cout << "write to client ret:" << iRet << endl;
                 break;
             }

@@ -24,6 +24,7 @@ using grpc::Status;
 
 using gameSvr::CSMessageS;
 using gameSvr::CSMessageC;
+using gameSvr::CSLoginC;
 
 using gameSvr::CmdID;
 
@@ -35,17 +36,21 @@ void TankGameClient::StartConnection()
         stub_->ClientMsgProcessor(&context));
 
     std::thread writer([stream]() {
+        CSMessageC msg;
         while (1)
         {
-            CSMessageC msg;
             msg.set_cmd(CmdID::CS_CMD_LOGIN);       
+            CSLoginC loginInfo;
+            loginInfo.set_username("testuser");
+            loginInfo.set_password("123");
+            msg.set_allocated_logininfo(&loginInfo);
             int iRet = stream->Write(msg);
             cout << "Sent message result:" << iRet  << endl;
 
             sleep(3);
             CSMessageS response;
             iRet = stream->Read(&response);
-            cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->userid() 
+            cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
             << ",ret:" << response.ret() << endl;
         }});
         writer.join();
