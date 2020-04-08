@@ -49,10 +49,10 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
-                    ret.mutable_loginresult()->set_token(12345);
+                    ret.mutable_loginresult()->set_token(player->context());
                     player->set_context((int64_t)stream);
                 }
-                ret.set_ret(666);
+                ret.set_ret(time(NULL));
                 int iRet = stream->Write(ret);
                 cout << "write to client ret:" << iRet << endl;
                 break;

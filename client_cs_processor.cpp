@@ -15,6 +15,7 @@
 
 using std::cout;
 using std::endl;
+using std::shared_ptr;
 
 using grpc::ClientContext;
 using grpc::ClientReader;
@@ -35,25 +36,26 @@ void TankGameClient::StartConnection()
     std::shared_ptr<ClientReaderWriter<CSMessageC, CSMessageS> > stream(
         stub_->ClientMsgProcessor(&context));
 
-    std::thread writer([stream]() {
-        CSMessageC msg;
-        while (1)
-        {
+    while (1)
+    {
+        std::thread writer([stream]() {
+            CSMessageC msg;
             msg.set_cmd(CmdID::CS_CMD_LOGIN);       
-            CSLoginC loginInfo;
-            loginInfo.set_username("testuser");
-            loginInfo.set_password("123");
-            msg.set_allocated_logininfo(&loginInfo);
+            CSLoginC *loginInfo = new CSLoginC();
+            loginInfo->set_username("testuser");
+            loginInfo->set_password("123");
+            msg.set_allocated_logininfo(loginInfo);
             int iRet = stream->Write(msg);
             cout << "Sent message result:" << iRet  << endl;
+        });
 
-            sleep(3);
-            CSMessageS response;
-            iRet = stream->Read(&response);
-            cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
-            << ",ret:" << response.ret() << endl;
-        }});
         writer.join();
+        CSMessageS response;
+        int iRet = stream->Read(&response);
+        cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
+            << ",ret:" << response.ret() << endl;
+        sleep(1);
+    }
     Status status = stream->Finish();
     if (!status.ok()) {
         std::cout << "RouteChat rpc failed." << std::endl;
