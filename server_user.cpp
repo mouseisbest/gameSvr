@@ -27,6 +27,7 @@ int server_user_login(string user_name, string password)
     }
     // 创建用户数据
     Player player;
+    memset(&player, 0, sizeof(Player));
     player.mutable_baseinfo()->set_username(user_name);
     player.set_token(g_iUserCount++);
     g_userMap.insert(std::make_pair(user_name, player));

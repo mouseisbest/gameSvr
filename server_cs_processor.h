@@ -10,6 +10,7 @@
 #include <grpcpp/security/server_credentials.h>
 
 #include "cs.grpc.pb.h"
+#include "server_user.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -31,9 +32,8 @@ public:
     Status ClientMsgProcessor(ServerContext* context,
         ServerReaderWriter<CSMessageS, CSMessageC>* stream) override;
 
-
-    void GetMutex();
-    void ReleaseMutex();
+    int SendMessage(Player *player, CSMessageS &msg);
+    int BoradcastMsg(CSMessageS &msg);
 
 private:
     std::mutex mu_;

@@ -4,19 +4,21 @@
 
 #include "cs.pb.h"
 #include "server_cs_processor.h"
-#include "server_user.h"
 
 using gameSvr::CmdID;
 using std::cout;
 using std::endl;
 
 
+
+extern PLAYER_MAP_TYPE g_userMap;
+
+GameServerImpl g_networkService;
 auto g_networkFun = []() {
     std::string server_address("0.0.0.0:50051");
-    GameServerImpl service;
     ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
+    builder.RegisterService(&g_networkService);
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
     server->Wait();
@@ -32,7 +34,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     CSMessageC msg;
     while (stream->Read(&msg)) 
     {
-        std::unique_lock<std::mutex> lock(mu_); 
+//        std::unique_lock<std::mutex> lock(mu_); 
         printf("incoming msg (%d)\n", msg.cmd());
         CSMessageS ret;
         switch (msg.cmd())
@@ -43,7 +45,6 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 iRet = server_user_login(loginInfo->username(), 
                     loginInfo->password());
                 Player* player = server_user_get_by_name(loginInfo->username());
-                // debug
                 cout << "incoming username:" << loginInfo->username() << ", password" << 
                     loginInfo->password() << endl;
                 if (NULL != player)
@@ -65,19 +66,29 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
             break;
         }
     }
-    cout << "Server network loop stopped." << endl;
+    cout << "Client connection closed." << endl;
     return Status::OK;
 }
 
 
-void GameServerImpl::GetMutex()
+int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 {
-}
-void GameServerImpl::ReleaseMutex()
-{
+    if (NULL == player)
+    {
+        return -1;
+    }
+
+    std::unique_lock<std::mutex> lock(mu_); 
+    return 0;
 }
 
 
+int GameServerImpl::BoradcastMsg(CSMessageS &msg)
+{
+
+    std::unique_lock<std::mutex> lock(mu_); 
+    return 0;
+}
 
 int start_server()
 {

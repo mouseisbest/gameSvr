@@ -41,10 +41,8 @@ void TankGameClient::StartConnection()
         std::thread writer([stream]() {
             CSMessageC msg;
             msg.set_cmd(CmdID::CS_CMD_LOGIN);       
-            CSLoginC *loginInfo = new CSLoginC();
-            loginInfo->set_username("testuser");
-            loginInfo->set_password("123");
-            msg.set_allocated_logininfo(loginInfo);
+            msg.mutable_logininfo()->set_username("test_user");
+            msg.mutable_logininfo()->set_password("123");
             int iRet = stream->Write(msg);
             cout << "Sent message result:" << iRet  << endl;
         });
