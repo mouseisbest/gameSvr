@@ -10,6 +10,27 @@ using gameSvr::def_enum;
 uint64_t g_iUserCount;
 PLAYER_MAP_TYPE g_userMap;
 
+static void server_user_init_data(Player *player)
+{
+    if (NULL == player)
+    {
+        return;
+    }
+
+    memset(player, 0, sizeof(*player));
+    player->set_token(g_iUserCount++);
+    player->set_mutex((int64_t)new std::mutex);
+}
+
+static void server_user_clear_data(Player *player)
+{
+    if (NULL == player)
+    {
+        return;
+    }
+    delete (std::mutex*)player->mutex();
+}
+
 int server_user_login(string user_name, string password)
 {
     if (!user_name.length() /*|| !password.length()*/)
@@ -27,9 +48,8 @@ int server_user_login(string user_name, string password)
     }
     // 创建用户数据
     Player player;
-    memset(&player, 0, sizeof(Player));
+    server_user_init_data(&player); 
     player.mutable_baseinfo()->set_username(user_name);
-    player.set_token(g_iUserCount++);
     g_userMap.insert(std::make_pair(user_name, player));
     return 0;
 }

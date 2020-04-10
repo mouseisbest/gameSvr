@@ -34,7 +34,6 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
     CSMessageC msg;
     while (stream->Read(&msg)) 
     {
-//        std::unique_lock<std::mutex> lock(mu_); 
         printf("incoming msg (%d)\n", msg.cmd());
         CSMessageS ret;
         switch (msg.cmd())
@@ -50,7 +49,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
-                    ret.mutable_loginresult()->set_token(player->context());
+                    ret.mutable_loginresult()->set_token(player->token());
                     player->set_context((int64_t)stream);
                 }
                 ret.set_ret(time(NULL));
@@ -59,6 +58,10 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 break;
             }
         case CmdID::CS_CMD_MOVE:
+            {
+                break;
+            }
+        case CmdID::CS_CMD_FIRE:
             {
                 break;
             }
@@ -73,20 +76,26 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
 
 int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 {
-    if (NULL == player)
+    if (NULL == player || 0 == player->mutex() || 0 == player->context())
     {
         return -1;
     }
 
-    std::unique_lock<std::mutex> lock(mu_); 
+    std::mutex *mutex = (std::mutex*)player->mutex();
+    std::unique_lock<std::mutex> lock(*mutex);
+    LPCLIENTCONTEXT stream = (LPCLIENTCONTEXT)player->context();
+    stream->Write(msg);
     return 0;
 }
 
 
 int GameServerImpl::BoradcastMsg(CSMessageS &msg)
 {
-
-    std::unique_lock<std::mutex> lock(mu_); 
+    for (PLAYER_MAP_TYPE::iterator it = g_userMap.begin(); 
+        it != g_userMap.end(); ++it)
+    {
+        SendMessage(&it->second, msg);
+    }
     return 0;
 }
 

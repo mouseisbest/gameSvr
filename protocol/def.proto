@@ -72,4 +72,5 @@ message Player {
     int64           LastUpdateTime      = 3;
     int64           Token               = 4;        // 标志当前登录的随机数 
     int64           Context             = 5;        // GRPC客户端句柄
+    int64           Mutex               = 6;        // mutex句柄
 }
