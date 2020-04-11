@@ -5,29 +5,29 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
-
-#include <grpc/grpc.h>
-#include <grpcpp/client_context.h>
-#include <grpcpp/create_channel.h>
-#include <grpcpp/security/credentials.h>
-
 #include "client_cs_processor.h"
 
 using std::cout;
 using std::endl;
 using std::shared_ptr;
 
-using grpc::ClientContext;
-using grpc::ClientReader;
-using grpc::ClientReaderWriter;
-using grpc::ClientWriter;
 using grpc::Status;
 
-using gameSvr::CSMessageS;
-using gameSvr::CSMessageC;
 using gameSvr::CSLoginC;
 
 using gameSvr::CmdID;
+
+
+TankGameClient::TankGameClient(std::shared_ptr<Channel> channel)
+        : stub_(GameServer::NewStub(channel)) {
+        //stream_ = new ClientReaderWriter<CSMessageC, CSMessageS> (stub_->ClientMsgProcessor(&context));
+        }
+
+TankGameClient::~TankGameClient()
+{
+}
+
+
 
 void TankGameClient::StartConnection() 
 {
@@ -36,11 +36,12 @@ void TankGameClient::StartConnection()
     std::shared_ptr<ClientReaderWriter<CSMessageC, CSMessageS> > stream(
         stub_->ClientMsgProcessor(&context));
 
-    while (1)
-    {
+    //while (1)
+    //{
         std::thread writer([stream]() {
             CSMessageC msg;
             msg.set_cmd(CmdID::CS_CMD_LOGIN);       
+            msg.set_seq(time(NULL));
             msg.mutable_logininfo()->set_username("test_user");
             msg.mutable_logininfo()->set_password("123");
             int iRet = stream->Write(msg);
@@ -53,11 +54,11 @@ void TankGameClient::StartConnection()
         cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
             << ",ret:" << response.ret() << endl;
         sleep(1);
-    }
-    Status status = stream->Finish();
-    if (!status.ok()) {
-        std::cout << "RouteChat rpc failed." << std::endl;
-    }
+    //}
+    //Status status = stream->Finish();
+    //if (!status.ok()) {
+    //    std::cout << "RouteChat rpc failed." << std::endl;
+    //}
 }
 
 
@@ -67,7 +68,8 @@ int connect_to_server()
         grpc::CreateChannel("localhost:50051",
             grpc::InsecureChannelCredentials()
             ));
-    client.StartConnection();
+    for (;;)
+        client.StartConnection();
 
     return 0;
 }

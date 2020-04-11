@@ -45,7 +45,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                     loginInfo->password());
                 Player* player = server_user_get_by_name(loginInfo->username());
                 cout << "incoming username:" << loginInfo->username() << ", password" << 
-                    loginInfo->password() << endl;
+                    loginInfo->password() << ", seq" << msg.seq() << endl;
                 if (NULL != player)
                 {
                     ret.set_cmd(msg.cmd());
