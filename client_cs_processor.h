@@ -29,7 +29,7 @@ public:
     TankGameClient(std::shared_ptr<Channel> channel);
     ~TankGameClient();
 
-    void StartConnection();
+    void SendMessage(CSMessageC &msg);
 
 private:
     std::unique_ptr<GameServer::Stub> stub_;

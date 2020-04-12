@@ -29,7 +29,7 @@ TankGameClient::~TankGameClient()
 
 
 
-void TankGameClient::StartConnection() 
+void TankGameClient::SendMessage(CSMessageC &msg) 
 {
     ClientContext context;
 
@@ -69,7 +69,9 @@ int connect_to_server()
             grpc::InsecureChannelCredentials()
             ));
     for (;;)
-        client.StartConnection();
-
+    {
+        CSMessageC msg;
+        client.SendMessage(msg);
+    }
     return 0;
 }
