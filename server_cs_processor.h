@@ -31,6 +31,7 @@ public:
     explicit GameServerImpl(){};
     Status ClientMsgProcessor(ServerContext* context,
         ServerReaderWriter<CSMessageS, CSMessageC>* stream) override;
+    int ProcessClientMsg(CSMessageC &msg);
 
     int SendMessage(Player *player, CSMessageS &msg);
     int BoradcastMsg(CSMessageS &msg);

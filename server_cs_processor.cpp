@@ -57,20 +57,43 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 cout << "write to client ret:" << iRet << endl;
                 break;
             }
-        case CmdID::CS_CMD_MOVE:
-            {
-                break;
-            }
-        case CmdID::CS_CMD_FIRE:
-            {
-                break;
-            }
         default:
+            {
+                Player *player = server_user_get_by_token(msg.token());
+                if (NULL == player)
+                {
+                    continue;
+                }
+                int iRet = ProcessClientMsg(msg);
+                if (iRet)
+                {
+                    cout << "Msg process failed, msg:" << msg.cmd() << ", ret:" << iRet << endl;
+                }
+            }
             break;
         }
     }
     cout << "Client connection closed." << endl;
     return Status::OK;
+}
+
+
+int GameServerImpl::ProcessClientMsg(CSMessageC &msg)
+{
+    switch (msg.cmd())
+    {
+    case CmdID::CS_CMD_MOVE:
+        {
+            break;
+        }
+    case CmdID::CS_CMD_FIRE:
+        {
+            break;
+        }
+    default:
+        break;
+    }
+    return 0;
 }
 
 

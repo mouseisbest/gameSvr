@@ -34,6 +34,10 @@ public:
     static void SendMessageThread(void *parm);
     static void RecvMessageThread(void *parm);
 
+    int ProcessServerMessage(CSMessageS &msg);
+
+    void WaitForThreads();
+
 private:
     std::unique_ptr<GameServer::Stub>       stub_;
     ClientContext                           context_;
@@ -43,6 +47,8 @@ private:
     std::thread                             writerThread_;
     std::deque<CSMessageC>                  queueSend_;
     std::deque<CSMessageS>                  queueRecv_;
+    uint64_t                                token_;
+    
 };
 
 

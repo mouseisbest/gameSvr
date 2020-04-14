@@ -57,7 +57,7 @@ void TankGameClient::SendMessageThread(void *parm)
         std::unique_lock<std::mutex> lock(client->mu_);
         if (client->queueSend_.empty())
         {
-            usleep(1000);
+            usleep(1);
             continue;
         }
         int iRet = client->stream_->Write(client->queueSend_.front());
@@ -78,10 +78,47 @@ void TankGameClient::RecvMessageThread(void *parm)
     {
         CSMessageS response;
         int iRet = client->stream_->Read(&response);
+        if (iRet != true)
+        {
+           continue;
+        }
+        iRet = client->ProcessServerMessage(response);
+        if (iRet)
+        {
+            continue;
+        }
         cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
             << ",ret:" << response.ret() << endl;
     }
 }
+
+
+
+int TankGameClient::ProcessServerMessage(CSMessageS &msg)
+{
+    switch (msg.cmd())
+    {
+    case CmdID::CS_CMD_LOGIN:
+        {
+            if (!msg.has_loginresult())
+            {
+                return -1;
+            }
+            token_ = msg.mutable_loginresult()->token();
+        }
+        break;
+    }
+
+    return 0;
+}
+
+
+void TankGameClient::WaitForThreads()
+{
+    readerThread_.join();
+    writerThread_.join();
+}
+
 
 int connect_to_server()
 {
@@ -95,5 +132,6 @@ int connect_to_server()
         client.SendMessage(msg);
         sleep(1);
     }
+    client.WaitForThreads();
     return 0;
 }
