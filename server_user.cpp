@@ -3,6 +3,7 @@
 
 
 #include "server_user.h"
+#include "server_object.h"
 
 
 using gameSvr::def_enum;
@@ -20,6 +21,7 @@ static void server_user_init_data(Player *player)
     memset(player, 0, sizeof(*player));
     player->set_token(g_iUserCount++);
     player->set_mutex((int64_t)new std::mutex);
+    player->set_objid(server_object_create(ObjType::OBJ_TYPE_TANK, player->token(), 0));
 }
 
 static void server_user_clear_data(Player *player)

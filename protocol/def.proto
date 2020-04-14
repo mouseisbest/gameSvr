@@ -48,10 +48,12 @@ enum ObjType {
 message Bullet {
     Direction   Dir     = 1; 
     int32       Speed   = 2;
+    int64       LinkObj = 3;
 }
 
 message Tank {
     BattleInfo      BattleInfo  = 2;
+    uint64          UserID      = 3;
 }
 
 

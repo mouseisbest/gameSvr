@@ -64,6 +64,10 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 {
                     continue;
                 }
+                if (player->token() != msg.token())
+                {
+                    continue;
+                }
                 int iRet = ProcessClientMsg(msg);
                 if (iRet)
                 {
