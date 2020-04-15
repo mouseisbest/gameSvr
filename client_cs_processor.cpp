@@ -36,6 +36,7 @@ TankGameClient::~TankGameClient()
 void TankGameClient::SendMessage(CSMessageC &msg) 
 {
     std::unique_lock<std::mutex> lock(mu_);
+    msg.set_token(token_);
     msg.set_cmd(CmdID::CS_CMD_LOGIN);       
     msg.set_seq(time(NULL));
     msg.mutable_logininfo()->set_username("test_user");

@@ -9,6 +9,7 @@ enum def_enum {
     DEF_ENUM_NULL                       = 0;
     MAX_PLAYER_NUM                      = 10;
     MAX_MAP_NUM                         = 10;
+    MIN_TANK_FIRE_TIME                  = 3;
     
 
 }

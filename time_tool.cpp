@@ -1,6 +1,17 @@
+
+
+#include <ctime>
 #include "time_tool.h"
 
 #define PROTECT_MS 1000000
+
+
+
+time_t get_time()
+{
+    return time(NULL);
+}
+
 
 unsigned int time_diff_ms(struct timeval *time1, struct timeval *time2)
 {
