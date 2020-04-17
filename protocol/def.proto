@@ -36,6 +36,7 @@ message BattleInfo {
 
 message PositionInfo {
     Point       Pos     = 1;
+    Direction   Dir     = 2; 
 }
 
 enum ObjType {
@@ -47,7 +48,6 @@ enum ObjType {
 
 
 message Bullet {
-    Direction   Dir     = 1; 
     int32       Speed   = 2;
     int64       LinkObj = 3;
 }
