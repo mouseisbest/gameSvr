@@ -10,6 +10,7 @@ enum def_enum {
     MAX_PLAYER_NUM                      = 10;
     MAX_MAP_NUM                         = 10;
     MIN_TANK_FIRE_TIME                  = 3;
+    DEFAULT_BULLET_SPEED                = 1;
     
 
 }
@@ -62,6 +63,7 @@ message Object {
     ObjType         Type                = 1;
     int64           ObjID               = 2;
     PositionInfo    Position            = 3;
+    int32           IsDeleted           = 4;
     oneof           Data {
         Tank        Tank                = 10;
         Bullet      Bullet              = 11;

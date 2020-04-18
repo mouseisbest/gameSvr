@@ -15,15 +15,27 @@ using gameSvr::res_enum;
 int g_iObjectNum;
 OBJECT_MAP_TYPE g_objectMap;
 
+
+
+void server_object_tick_bullet(Object &obj)
+{
+
+}
+
+
 void server_object_single_tick(OBJECT_ITEM_TYPE item)
 {
     Object *object = &item.second;
     switch (object->type())
     {
     case ObjType::OBJ_TYPE_TANK:
-        break;
+        {
+            break;
+        }
     case ObjType::OBJ_TYPE_BULLET:
-        break;
+        {
+            break;
+        }
     default:
         break;
     }
@@ -90,7 +102,8 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
             object.set_type(ObjType::OBJ_TYPE_BULLET);
             object.mutable_position()->mutable_pos()->set_x(parent->mutable_position()->mutable_pos()->x());
             object.mutable_position()->mutable_pos()->set_y(parent->mutable_position()->mutable_pos()->y());
-            //object.mutable_bullet()->set_dir(parent->);
+            object.mutable_position()->set_dir(parent->mutable_position()->dir());
+            object.mutable_bullet()->set_speed(def_enum::DEFAULT_BULLET_SPEED);
 
             break;
         }
