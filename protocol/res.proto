@@ -11,6 +11,10 @@ enum res_enum {
 
 }
 
+
+// 地图规则：
+// 左上角为(0,0) 右下角为(39,39)
+
 message MapLine {
     repeated int32 cell                 = 1;
 }

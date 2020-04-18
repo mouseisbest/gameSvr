@@ -63,7 +63,7 @@ message Object {
     ObjType         Type                = 1;
     int64           ObjID               = 2;
     PositionInfo    Position            = 3;
-    int32           IsDeleted           = 4;
+    int32           Collision           = 4;
     oneof           Data {
         Tank        Tank                = 10;
         Bullet      Bullet              = 11;

@@ -11,15 +11,56 @@ using gameSvr::ObjType;
 using gameSvr::Tank;
 using gameSvr::def_enum;
 using gameSvr::res_enum;
+using gameSvr::Direction;
 
 int g_iObjectNum;
 OBJECT_MAP_TYPE g_objectMap;
 
 
+void server_object_position_change(Object &obj, Direction dir)
+{
+    auto pos = obj.mutable_position();
+    auto info = obj.mutable_tank()->mutable_battleinfo();
+
+    int x = pos->mutable_pos()->x();
+    int y = pos->mutable_pos()->y();
+    int speed = info->speed();
+    // 更新位置
+    switch (dir)
+    {
+    case Direction::DIRECTION_EAST:
+        {
+            x += speed;
+            break;
+        }
+    case Direction::DIRECTION_WEST:
+        {
+            x -= speed;
+            break;
+        }
+    case Direction::DIRECTION_SOUTH:
+        {
+            y += speed;
+            break;
+        }
+    case Direction::DIRECTION_NORTH:
+        {
+            y -= speed;
+            break;
+        }
+    default:
+        break;
+    }
+
+    // 这里不处理超过边界的情况
+    pos->mutable_pos()->set_x(x);
+    pos->mutable_pos()->set_y(y);
+}
+
 
 void server_object_tick_bullet(Object &obj)
 {
-
+    server_object_position_change(obj, obj.mutable_position()->dir());
 }
 
 
