@@ -121,18 +121,3 @@ void TankGameClient::WaitForThreads()
 }
 
 
-int connect_to_server()
-{
-    TankGameClient client(
-        grpc::CreateChannel("localhost:50051",
-            grpc::InsecureChannelCredentials()
-            ));
-    for (;;)
-    {
-        CSMessageC msg;
-        client.SendMessage(msg);
-        sleep(1);
-    }
-    client.WaitForThreads();
-    return 0;
-}

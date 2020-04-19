@@ -7,7 +7,6 @@ package gameSvr;
 
 service GameServer {
     rpc ClientMsgProcessor(stream CSMessageC) returns (stream CSMessageS) {}
-    rpc ClientMsgProcessorCompatible(CSMessageC) returns (stream CSMessageS) {}
 }
 
 

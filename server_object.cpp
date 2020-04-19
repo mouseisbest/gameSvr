@@ -11,7 +11,6 @@ using gameSvr::ObjType;
 using gameSvr::Tank;
 using gameSvr::def_enum;
 using gameSvr::res_enum;
-using gameSvr::Direction;
 
 int g_iObjectNum;
 OBJECT_MAP_TYPE g_objectMap;
@@ -55,6 +54,11 @@ void server_object_position_change(Object &obj, Direction dir)
     // 这里不处理超过边界的情况
     pos->mutable_pos()->set_x(x);
     pos->mutable_pos()->set_y(y);
+    if (x < 0 || x >= res_enum::MAX_MAP_WIDTH || 
+        y < 0 || y >= res_enum::MAX_MAP_HEIGHT)
+    {
+        obj.set_collision(1);
+    }
 }
 
 
@@ -64,7 +68,27 @@ void server_object_tick_bullet(Object &obj)
 }
 
 
-void server_object_single_tick(OBJECT_ITEM_TYPE item)
+void server_object_move_tick(OBJECT_ITEM_TYPE item)
+{
+    Object *object = &item.second;
+    switch (object->type())
+    {
+    case ObjType::OBJ_TYPE_TANK:
+        {
+            break;
+        }
+    case ObjType::OBJ_TYPE_BULLET:
+        {
+            server_object_tick_bullet(*object);
+            break;
+        }
+    default:
+        break;
+    }
+
+}
+
+void server_object_combat_tick(OBJECT_ITEM_TYPE item)
 {
     Object *object = &item.second;
     switch (object->type())
@@ -82,6 +106,7 @@ void server_object_single_tick(OBJECT_ITEM_TYPE item)
     }
 
 }
+
 
 static void server_object_init_tank(Object &object)
 {
@@ -156,7 +181,20 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
     return object.objid();
 }
 
+Object *server_object_find(uint64_t objid)
+{
+    auto res = g_objectMap.find(objid);
+    if (res == g_objectMap.end())
+    {
+        return nullptr;
+    }
+    return &res->second;
+}
+
+
+
 void server_object_tick()
 {
-    for_each(g_objectMap.begin(), g_objectMap.end(), server_object_single_tick);
+    for_each(g_objectMap.begin(), g_objectMap.end(), server_object_move_tick);
+    for_each(g_objectMap.begin(), g_objectMap.end(), server_object_combat_tick);
 }

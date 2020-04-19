@@ -4,6 +4,7 @@
 
 #include "cs.pb.h"
 #include "server_cs_processor.h"
+#include "server_object.h"
 
 using gameSvr::CmdID;
 using std::cout;
@@ -46,13 +47,13 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 Player* player = server_user_get_by_name(loginInfo->username());
                 cout << "incoming username:" << loginInfo->username() << ", password" << 
                     loginInfo->password() << ", seq" << msg.seq() << endl;
-                if (NULL != player)
+                if (nullptr != player)
                 {
                     ret.set_cmd(msg.cmd());
                     ret.mutable_loginresult()->set_token(player->token());
                     player->set_context((int64_t)stream);
                 }
-                ret.set_ret(time(NULL));
+                ret.set_ret(time(nullptr));
                 int iRet = stream->Write(ret);
                 cout << "write to client ret:" << iRet << endl;
                 break;
@@ -60,7 +61,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
         default:
             {
                 Player *player = server_user_get_by_token(msg.token());
-                if (NULL == player)
+                if (nullptr == player)
                 {
                     continue;
                 }
@@ -68,7 +69,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 {
                     continue;
                 }
-                int iRet = ProcessClientMsg(msg);
+                int iRet = ProcessClientMsg(player, msg);
                 if (iRet)
                 {
                     cout << "Msg process failed, msg:" << msg.cmd() << ", ret:" << iRet << endl;
@@ -82,16 +83,23 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
 }
 
 
-int GameServerImpl::ProcessClientMsg(CSMessageC &msg)
+int GameServerImpl::ProcessClientMsg(Player *player, CSMessageC &msg)
 {
+    Object *obj = server_object_find(player->objid());
+    if (nullptr == obj)
+    {
+        return -1;
+    }
     switch (msg.cmd())
     {
     case CmdID::CS_CMD_MOVE:
         {
+            server_object_position_change(*obj, msg.mutable_move()->dir());
             break;
         }
     case CmdID::CS_CMD_FIRE:
         {
+            server_object_create(ObjType::OBJ_TYPE_BULLET, (uint64_t)obj, 0); 
             break;
         }
     default:
@@ -103,7 +111,7 @@ int GameServerImpl::ProcessClientMsg(CSMessageC &msg)
 
 int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 {
-    if (NULL == player || 0 == player->mutex() || 0 == player->context())
+    if (nullptr == player || 0 == player->mutex() || 0 == player->context())
     {
         return -1;
     }
