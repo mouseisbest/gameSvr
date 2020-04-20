@@ -58,7 +58,7 @@ void TankGameClient::SendMessageThread(void *parm)
         std::unique_lock<std::mutex> lock(client->mu_);
         if (client->queueSend_.empty())
         {
-            usleep(1);
+            usleep(100000);
             continue;
         }
         int iRet = client->stream_->Write(client->queueSend_.front());
@@ -81,6 +81,7 @@ void TankGameClient::RecvMessageThread(void *parm)
         int iRet = client->stream_->Read(&response);
         if (iRet != true)
         {
+           usleep(100000);
            continue;
         }
         iRet = client->ProcessServerMessage(response);
