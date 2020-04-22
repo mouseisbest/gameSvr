@@ -18,7 +18,6 @@ using position_type=std::array<int,2>;
 wchar_t wchUp = U'↑';
 darwin::pixel head_pix(wchUp ,true,false,darwin::colors::white,darwin::colors::black);
 
-darwin::pixel tank_pix(wchUp,true,false,darwin::colors::white,darwin::colors::black);
 
 position_type snake_head= {0,0};
 int heading=2;
@@ -69,6 +68,7 @@ void start()
                 {
 					heading=-1;
 				    --snake_head[1];
+                    head_pix.set_char('U');
                 }
 				break;
 			case 's':
@@ -76,6 +76,7 @@ void start()
                 {
 					heading=-2;
 				    ++snake_head[1];
+                    head_pix.set_char('D');
                 }
 				break;
 			case 'a':
@@ -83,6 +84,7 @@ void start()
                 {
 					heading=1;
 				    --snake_head[0];
+                    head_pix.set_char('L');
                 }
 				break;
 			case 'd':
@@ -90,10 +92,27 @@ void start()
                 {
 					heading=2;
 				    ++snake_head[0];
+                    head_pix.set_char('R');
                 }
 				break;
 			}
 		}
+        if (snake_head[0] < 0)
+        {
+            snake_head[0] = 0;
+        }
+        if (snake_head[1] < 0)
+        {
+            snake_head[1] = 0;
+        }
+        if (snake_head[0] >= 60)
+        {
+            snake_head[0] = 60;
+        }
+        if (snake_head[1] >= 18)
+        {
+            snake_head[1] = 18;
+        }
         
 		pic->clear();
 		pic->draw_pixel(snake_head[0],snake_head[1],head_pix);
