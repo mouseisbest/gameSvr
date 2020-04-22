@@ -15,7 +15,11 @@ using std::cout;
 #include <deque>
 #include <ctime>
 using position_type=std::array<int,2>;
-darwin::pixel head_pix('#',true,false,darwin::colors::white,darwin::colors::black);
+wchar_t wchUp = U'↑';
+darwin::pixel head_pix(wchUp ,true,false,darwin::colors::white,darwin::colors::black);
+
+darwin::pixel tank_pix(wchUp,true,false,darwin::colors::white,darwin::colors::black);
+
 position_type snake_head= {0,0};
 int heading=2;
 /*
@@ -24,7 +28,6 @@ int heading=2;
 -1=up
 -2=down
 */
-int init_long=5;
 bool god_mode=true;
 bool cross_wall=true;
 int hard=3;
@@ -55,7 +58,7 @@ void start()
 {
 	auto pic=darwin::runtime.get_drawable();
 	darwin::sync_clock clock(30);
-	snake_head= {init_long,0.5*pic->get_height()};
+	snake_head= {0, (int)(0.5*pic->get_height())};
 	int frame=0;
 	while(true) {
 		clock.reset();
@@ -112,7 +115,7 @@ int main(int argc, char** argv) {
 	darwin::runtime.load("./darwin.module");
 	darwin::runtime.fit_drawable();
 
-	auto pic=darwin::runtime.get_drawable();
+	auto pic = darwin::runtime.get_drawable();
     cout << pic->get_height();
 	while(true) {
 		heading=2;
