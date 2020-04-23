@@ -9,10 +9,12 @@
 #include <grpcpp/security/credentials.h>
 #include <grpcpp/channel.h>
 
+#include "key.pb.h"
 #include "cs.grpc.pb.h"
 
-using grpc::Channel;
 using gameSvr::GameServer;
+using gameSvr::Direction;
+using grpc::Channel;
 using grpc::ClientContext;
 
 using grpc::ClientReader;
@@ -31,7 +33,7 @@ public:
 
     void WaitForThreads();
 
-    int SendMoveReq(int dir);
+    int SendMoveReq(Direction dir);
     int SendFireReq();
 
 private:
@@ -43,7 +45,6 @@ private:
     std::unique_ptr<GameServer::Stub>       stub_;
     ClientContext                           context_;
     std::shared_ptr<SERVERSTREAM>           stream_;
-    std::mutex                              mu_;
     std::thread                             readerThread_;
     std::thread                             writerThread_;
     std::deque<CSMessageC>                  queueSend_;
@@ -51,11 +52,6 @@ private:
     uint64_t                                token_;
     
 };
-
-
-
-
-
 
 
 #endif

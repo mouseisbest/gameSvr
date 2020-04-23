@@ -5,7 +5,6 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
-#include "key.pb.h"
 #include "client_cs_processor.h"
 
 using std::cout;
@@ -17,7 +16,6 @@ using grpc::Status;
 using gameSvr::CSLoginC;
 
 using gameSvr::CmdID;
-using gameSvr::Direction;
 
 TankGameClient::TankGameClient(std::shared_ptr<Channel> channel)
     : stub_(GameServer::NewStub(channel)), 
@@ -47,7 +45,6 @@ int TankGameClient::TryToLogin()
 
 void TankGameClient::SendMessage(CSMessageC &msg) 
 {
-    std::unique_lock<std::mutex> lock(mu_);
     if (token_ > 0)
     {
         msg.set_token(token_);
@@ -66,7 +63,6 @@ void TankGameClient::SendMessageThread(void *parm)
     TankGameClient *client = (TankGameClient*)parm;
     while (1)
     {
-        std::unique_lock<std::mutex> lock(client->mu_);
         if (client->queueSend_.empty())
         {
             usleep(100000);
@@ -140,10 +136,11 @@ void TankGameClient::WaitForThreads()
 }
 
 
-int TankGameClient::SendMoveReq(int dir)
+int TankGameClient::SendMoveReq(Direction dir)
 {
     CSMessageC msg = {};
     msg.set_cmd(CmdID::CS_CMD_MOVE);
+    msg.mutable_move()->set_dir(dir);
     SendMessage(msg);
     return 0;
 }

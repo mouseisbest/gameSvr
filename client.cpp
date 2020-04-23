@@ -80,6 +80,7 @@ void start(TankGameClient *client )
             default:
                 break;
 			}
+            client->SendMoveReq(dir);
 		}
         if (tank[0] < 0)
         {
@@ -97,7 +98,6 @@ void start(TankGameClient *client )
         {
             tank[1] = 18;
         }
-        //client->SendMoveReq(dir);
 		pic->clear();
 		pic->draw_pixel(tank[0],tank[1],head_pix);
 		darwin::runtime.update_drawable();
