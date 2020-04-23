@@ -29,16 +29,17 @@ public:
     TankGameClient(std::shared_ptr<Channel> channel);
     ~TankGameClient();
 
-    void SendMessage(CSMessageC &msg);
-
-    static void SendMessageThread(void *parm);
-    static void RecvMessageThread(void *parm);
-
-    int ProcessServerMessage(CSMessageS &msg);
-
     void WaitForThreads();
 
+    int SendMoveReq(int dir);
+    int SendFireReq();
+
 private:
+    int TryToLogin();
+    static void SendMessageThread(void *parm);
+    static void RecvMessageThread(void *parm);
+    int ProcessServerMessage(CSMessageS &msg);
+    void SendMessage(CSMessageC &msg);
     std::unique_ptr<GameServer::Stub>       stub_;
     ClientContext                           context_;
     std::shared_ptr<SERVERSTREAM>           stream_;

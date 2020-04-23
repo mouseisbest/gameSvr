@@ -52,6 +52,7 @@ int server_user_login(string user_name, string password)
     Player player;
     server_user_init_data(&player); 
     player.mutable_baseinfo()->set_username(user_name);
+    player.set_token(++g_iUserCount);
     g_userMap.insert(std::make_pair(user_name, player));
     return 0;
 }

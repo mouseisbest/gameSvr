@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
+#include "key.pb.h"
 #include "client_cs_processor.h"
 
 using std::cout;
@@ -16,31 +17,41 @@ using grpc::Status;
 using gameSvr::CSLoginC;
 
 using gameSvr::CmdID;
-
+using gameSvr::Direction;
 
 TankGameClient::TankGameClient(std::shared_ptr<Channel> channel)
     : stub_(GameServer::NewStub(channel)), 
     context_(), 
     stream_(stub_->ClientMsgProcessor(&context_)),
     readerThread_(&TankGameClient::RecvMessageThread, this),
-    writerThread_(&TankGameClient::SendMessageThread, this)
+    writerThread_(&TankGameClient::SendMessageThread, this),
+    token_(0)
 {
+    TryToLogin();
 }
 
 TankGameClient::~TankGameClient()
 {
 }
 
-
-
-void TankGameClient::SendMessage(CSMessageC &msg) 
+int TankGameClient::TryToLogin()
 {
-    std::unique_lock<std::mutex> lock(mu_);
-    msg.set_token(token_);
+    CSMessageC msg = {};
     msg.set_cmd(CmdID::CS_CMD_LOGIN);       
     msg.set_seq(time(NULL));
     msg.mutable_logininfo()->set_username("test_user");
     msg.mutable_logininfo()->set_password("123");
+    SendMessage(msg);
+    return 0;
+}
+
+void TankGameClient::SendMessage(CSMessageC &msg) 
+{
+    std::unique_lock<std::mutex> lock(mu_);
+    if (token_ > 0)
+    {
+        msg.set_token(token_);
+    }
     queueSend_.push_back(msg);
     cout << "Sent message to queue" << endl;
 }
@@ -107,7 +118,14 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
                 return -1;
             }
             token_ = msg.mutable_loginresult()->token();
+            //cout << "Got server token:" << token_ << endl;
         }
+        break;
+    case CmdID::CS_CMD_MOVE:
+        {
+        }
+        break;
+    default:
         break;
     }
 
@@ -122,3 +140,16 @@ void TankGameClient::WaitForThreads()
 }
 
 
+int TankGameClient::SendMoveReq(int dir)
+{
+    CSMessageC msg = {};
+    msg.set_cmd(CmdID::CS_CMD_MOVE);
+    SendMessage(msg);
+    return 0;
+}
+
+
+int TankGameClient::SendFireReq()
+{
+    return 0;
+}

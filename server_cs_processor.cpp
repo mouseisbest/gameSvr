@@ -94,7 +94,12 @@ int GameServerImpl::ProcessClientMsg(Player *player, CSMessageC &msg)
     {
     case CmdID::CS_CMD_MOVE:
         {
+            gameSvr::PositionInfo pos = *obj->mutable_position();
             server_object_position_change(*obj, msg.mutable_move()->dir());
+            printf("object:%ld, dir(%d), from(%d,%d)->(%d,%d)\n",
+                obj->objid(), msg.mutable_move()->dir(), pos.mutable_pos()->x(),
+                pos.mutable_pos()->y(), obj->mutable_position()->mutable_pos()->x(),
+                obj->mutable_position()->mutable_pos()->y());
             break;
         }
     case CmdID::CS_CMD_FIRE:
