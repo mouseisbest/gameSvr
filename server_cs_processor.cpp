@@ -129,7 +129,7 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 }
 
 
-int GameServerImpl::BoradcastMsg(CSMessageS &msg)
+int GameServerImpl::BroadcastMsg(CSMessageS &msg)
 {
     for (PLAYER_MAP_TYPE::iterator it = g_userMap.begin(); 
         it != g_userMap.end(); ++it)
@@ -144,3 +144,4 @@ int start_server()
     g_networkThread = std::thread(g_networkFun);
     return 0;
 }
+

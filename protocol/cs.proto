@@ -51,7 +51,7 @@ message CSTank {
 }
     
 message CSBullet {
-    PositionInfo        Pos         = 1;
+    Direction           Dir         = 1;
 }
 
 message CSObject {
@@ -71,13 +71,13 @@ message CSMapInfoS { // MAX_OBJECT_IN_MAP_NUM
 
 // 客户端消息
 message CSMessageC {
-    int32 Cmd           = 1;
-    int32 Seq           = 2;
-    uint64 Token         = 3;
+    int32               Cmd           = 1;
+    int32               Seq           = 2;
+    uint64              Token         = 3;
     oneof Data {
-        CSLoginC LoginInfo  = 10;
-        CSMoveC  Move       = 11;
-        CSFireC  Fire       = 12;
+        CSLoginC        LoginInfo       = 10;
+        CSMoveC         Move            = 11;
+        CSFireC         Fire            = 12;
     }
 }
 
@@ -87,6 +87,7 @@ message CSMessageS {
     int32 Seq = 2;
     int32 Ret = 3;
     oneof Data {
-        CSLoginS LoginResult = 10;        
+        CSLoginS        LoginResult         = 10;        
+        CSMapInfoS      MapInfo             = 11;
     }
 }

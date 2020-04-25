@@ -1,8 +1,10 @@
 #include <algorithm>
 
 #include "server_object.h"
+#include "server_cs_processor.h"
 #include "time_tool.h"
 #include "def.pb.h"
+#include "cs.pb.h"
 #include "res.pb.h"
 
 using std::for_each;
@@ -11,9 +13,12 @@ using gameSvr::ObjType;
 using gameSvr::Tank;
 using gameSvr::def_enum;
 using gameSvr::res_enum;
+using gameSvr::CmdID;
+using gameSvr::CSObject;
 
 int g_iObjectNum;
 OBJECT_MAP_TYPE g_objectMap;
+extern GameServerImpl g_networkService;
 
 
 void server_object_position_change(Object &obj, Direction dir)
@@ -207,7 +212,42 @@ Object *server_object_find(uint64_t objid)
     return &res->second;
 }
 
+static void server_object_to_cs_object(Object &obj, CSObject &csObj)
+{
+    csObj.set_type(obj.type());
+    csObj.set_objid(obj.objid());
+    csObj.mutable_position()->CopyFrom(*obj.mutable_position());
+    switch (obj.type())
+    {
+    case ObjType::OBJ_TYPE_TANK:
+        {
+            auto battle_info = csObj.mutable_tank()->mutable_info();
+            battle_info->set_hp(obj.mutable_tank()->mutable_battleinfo()->hp());
+            battle_info->set_dir(obj.mutable_position()->dir());
+            break;
+        }
+    case ObjType::OBJ_TYPE_BULLET:
+        {
+            csObj.mutable_bullet()->set_dir(obj.mutable_position()->dir());
+            break;
+        }
+    default:
+        break;
+    }
+}
 
+static void server_object_broadcast()
+{
+    CSMessageS msg;
+    msg.set_cmd(CmdID::CS_CMD_MAP_INFO);
+    auto array = msg.mutable_mapinfo();
+    for (OBJECT_MAP_TYPE::iterator it = g_objectMap.begin(); it != g_objectMap.end(); ++it)
+    {
+        auto csObj = array->add_object();
+        server_object_to_cs_object(it->second, *csObj);
+    }
+    g_networkService.BroadcastMsg(msg);
+}
 
 void server_object_tick()
 {

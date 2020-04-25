@@ -34,7 +34,7 @@ public:
     int ProcessClientMsg(Player *player, CSMessageC &msg);
 
     int SendMessage(Player *player, CSMessageS &msg);
-    int BoradcastMsg(CSMessageS &msg);
+    int BroadcastMsg(CSMessageS &msg);
 
 private:
     std::mutex mu_;
