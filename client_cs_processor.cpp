@@ -121,6 +121,10 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
         {
         }
         break;
+    case CmdID::CS_CMD_MAP_INFO:
+        {
+        }
+        break;
     default:
         break;
     }

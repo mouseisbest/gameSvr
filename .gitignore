@@ -42,3 +42,4 @@ client
 tags
 core
 *.swo
+*.log

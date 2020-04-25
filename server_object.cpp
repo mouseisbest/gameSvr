@@ -51,14 +51,30 @@ void server_object_position_change(Object &obj, Direction dir)
         break;
     }
 
-    // 这里不处理超过边界的情况
-    pos->mutable_pos()->set_x(x);
-    pos->mutable_pos()->set_y(y);
+    // 处理超过边界的情况
     if (x < 0 || x >= res_enum::MAX_MAP_WIDTH || 
         y < 0 || y >= res_enum::MAX_MAP_HEIGHT)
     {
         obj.set_collision(1);
     }
+    if (x < 0)
+    {
+        x = 0;
+    }
+    if (y < 0)
+    {
+        y = 0;
+    }
+    if (x >= res_enum::MAX_MAP_WIDTH)
+    {
+        x = res_enum::MAX_MAP_WIDTH;
+    }
+    if (y >= res_enum::MAX_MAP_HEIGHT)
+    {
+        y = res_enum::MAX_MAP_HEIGHT;
+    }
+    pos->mutable_pos()->set_x(x);
+    pos->mutable_pos()->set_y(y);
 }
 
 

@@ -41,8 +41,33 @@ message CSFireC {
     Direction Dir       = 1;
 }
 
+message CSBattleInfo {
+    int64       HP                  = 1;
+    Direction   Dir                 = 2;
+}
 
+message CSTank {
+    CSBattleInfo        Info        = 1;
+}
+    
+message CSBullet {
+    PositionInfo        Pos         = 1;
+}
 
+message CSObject {
+    ObjType             Type        = 1;
+    int64               ObjID       = 2;
+    PositionInfo        Position    = 3;
+    
+    oneof               Data {
+        CSTank          Tank        = 10;
+        CSBullet        Bullet      = 11;
+    }
+}
+
+message CSMapInfoS { // MAX_OBJECT_IN_MAP_NUM
+    repeated CSObject   Object      = 1;
+}
 
 // 客户端消息
 message CSMessageC {
