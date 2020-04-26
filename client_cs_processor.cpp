@@ -10,12 +10,13 @@
 using std::cout;
 using std::endl;
 using std::shared_ptr;
-
 using grpc::Status;
-
 using gameSvr::CSLoginC;
-
 using gameSvr::CmdID;
+using gameSvr::CSMapInfoS;
+
+extern CSMapInfoS g_objectList;
+extern std::mutex g_objListMutex;
 
 TankGameClient::TankGameClient(std::shared_ptr<Channel> channel)
     : stub_(GameServer::NewStub(channel)), 
@@ -91,13 +92,13 @@ void TankGameClient::RecvMessageThread(void *parm)
            usleep(100000);
            continue;
         }
+        cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
+            << ",ret:" << response.ret() << endl;
         iRet = client->ProcessServerMessage(response);
         if (iRet)
         {
             continue;
         }
-        cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
-            << ",ret:" << response.ret() << endl;
     }
 }
 
@@ -123,6 +124,9 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
         break;
     case CmdID::CS_CMD_MAP_INFO:
         {
+            std::unique_lock<std::mutex> lock(g_objListMutex);
+            g_objectList = *msg.mutable_mapinfo();
+            break;
         }
         break;
     default:

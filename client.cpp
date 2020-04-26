@@ -5,11 +5,14 @@
 #include <unistd.h>
 #include "lib/graphics/darwin.hpp"
 #include "key.pb.h"
+#include "def.pb.h"
 #include "client_cs_processor.h"
 
 
 using std::cout;
 using gameSvr::Direction;
+using gameSvr::CSMapInfoS;
+using gameSvr::ObjType;
 
 #include <string>
 #include <random>
@@ -17,10 +20,11 @@ using gameSvr::Direction;
 #include <deque>
 #include <ctime>
 using position_type=std::array<int,2>;
-wchar_t wchUp = U'↑';
+wchar_t wchUp = '#';
 darwin::pixel head_pix(wchUp ,true,false,darwin::colors::white,darwin::colors::black);
 
-
+CSMapInfoS g_objectList;
+std::mutex g_objListMutex;
 position_type tank= {0, 0};
 int heading=2;
 /*
@@ -30,15 +34,72 @@ int heading=2;
 -2=down
 */
 bool god_mode=true;
+
+void draw_all_objects()
+{
+    auto pic = darwin::runtime.get_drawable();
+    darwin::sync_clock clock(30);
+    darwin::pixel obj_pixel(wchUp, true, false, darwin::colors::white, darwin::colors::black);
+    while (1)
+    {
+        usleep(100000);
+        CSMapInfoS data;
+        int iSize = 0;
+        {
+            std::unique_lock<std::mutex> lock(g_objListMutex);
+            data = g_objectList;
+            iSize = g_objectList.object_size();
+        }
+        pic->clear(); 
+        for (int i = 0; i < iSize; ++i)
+        {
+            auto obj = g_objectList.object(i);
+            auto pos = obj.mutable_position();
+            switch (obj.type())
+            {
+            case ObjType::OBJ_TYPE_TANK:
+                {
+                    switch (pos->dir())
+                    {
+                    case Direction::DIRECTION_NORTH:
+                        obj_pixel.set_char('U');
+                        break;
+                    case Direction::DIRECTION_SOUTH:
+                        obj_pixel.set_char('D');
+                        break;
+                    case Direction::DIRECTION_WEST:
+                        obj_pixel.set_char('L');
+                        break;
+                    case Direction::DIRECTION_EAST:
+                        obj_pixel.set_char('R');
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                }
+            case ObjType::OBJ_TYPE_BULLET:
+                break;
+            default:
+                break;
+            } 
+            pic->draw_pixel(pos->mutable_pos()->x(), pos->mutable_pos()->y(), obj_pixel); 
+            printf("obj(%d,%d)\n", pos->mutable_pos()->x(), pos->mutable_pos()->y());
+        } 
+        darwin::runtime.update_drawable();
+        clock.sync();
+    }
+}
+
 void start(TankGameClient *client )
 {
-	auto pic=darwin::runtime.get_drawable();
 	darwin::sync_clock clock(30);
-	tank= {0, (int)(0.5*pic->get_height())};
-	int frame=0;
+	//auto pic = darwin::runtime.get_drawable();
+	//tank= {0, (int)(0.5*pic->get_height())};
+	//int frame=0;
     Direction dir = Direction::DIRECTION_EAST;
 	while(true) {
-		clock.reset();
+	//	clock.reset();
 		if(darwin::runtime.is_kb_hit()) {
 			switch(darwin::runtime.get_kb_hit()) {
 			case 'w':
@@ -98,11 +159,11 @@ void start(TankGameClient *client )
         {
             tank[1] = 18;
         }
-		pic->clear();
-		pic->draw_pixel(tank[0],tank[1],head_pix);
-		darwin::runtime.update_drawable();
-		++frame;
-		clock.sync();
+		//pic->clear();
+		//pic->draw_pixel(tank[0],tank[1],head_pix);
+		//darwin::runtime.update_drawable();
+		//++frame;
+		//clock.sync();
 	}
 }
 
@@ -118,12 +179,8 @@ int main(int argc, char** argv) {
 	darwin::runtime.load("./darwin.module");
 	darwin::runtime.fit_drawable();
 
-	auto pic = darwin::runtime.get_drawable();
-    cout << pic->get_height();
-	while(true) {
-		heading=2;
-		start(&client);
-	}
+    std::thread drawThread(draw_all_objects);
+    start(&client);
 
     /*for (;;)
     {
@@ -134,7 +191,7 @@ int main(int argc, char** argv) {
 
 
 
-
+    drawThread.join();
     client.WaitForThreads();
 
     return 0;

@@ -238,6 +238,10 @@ static void server_object_to_cs_object(Object &obj, CSObject &csObj)
 
 static void server_object_broadcast()
 {
+    if (g_objectMap.size() == 0)
+    {
+        return;
+    }
     CSMessageS msg;
     msg.set_cmd(CmdID::CS_CMD_MAP_INFO);
     auto array = msg.mutable_mapinfo();
@@ -246,6 +250,7 @@ static void server_object_broadcast()
         auto csObj = array->add_object();
         server_object_to_cs_object(it->second, *csObj);
     }
+    printf("%s: %d objects packed\n", __FUNCTION__, array->object_size());
     g_networkService.BroadcastMsg(msg);
 }
 
@@ -253,4 +258,5 @@ void server_object_tick()
 {
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_move_tick);
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_combat_tick);
+    server_object_broadcast();
 }

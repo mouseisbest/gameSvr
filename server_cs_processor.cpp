@@ -124,7 +124,8 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
     std::mutex *mutex = (std::mutex*)player->mutex();
     std::unique_lock<std::mutex> lock(*mutex);
     LPCLIENTCONTEXT stream = (LPCLIENTCONTEXT)player->context();
-    stream->Write(msg);
+    int iRet = stream->Write(msg);
+    printf("%s: send msg(%d) ret(%d)\n", __FUNCTION__, msg.cmd(), iRet);
     return 0;
 }
 
