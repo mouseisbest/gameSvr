@@ -52,7 +52,7 @@ void TankGameClient::SendMessage(CSMessageC &msg)
         msg.set_token(token_);
     }
     queueSend_.push_back(msg);
-    cout << "Sent message to queue" << endl;
+    //cout << "Sent message to queue" << endl;
 }
 
 
@@ -72,7 +72,7 @@ void TankGameClient::SendMessageThread(void *parm)
         }
         int iRet = client->stream_->Write(client->queueSend_.front());
         client->queueSend_.pop_front();
-        cout << "Send msg in queue ret:" << iRet << endl;
+        //cout << "Send msg in queue ret:" << iRet << endl;
     }
 }
 
@@ -88,15 +88,15 @@ void TankGameClient::RecvMessageThread(void *parm)
     {
         CSMessageS response;
         int iRet = client->stream_->Read(&response);
-        cout << "Grpc ret: " << iRet << endl;
+        //cout << "Grpc ret: " << iRet << endl;
         if (iRet != true)
         {
            usleep(100000);
            continue;
         }
         iRet = client->ProcessServerMessage(response);
-        cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
-            << ",ret:" << response.ret() << endl;
+        //cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
+        //    << ",ret:" << response.ret() << endl;
         if (iRet)
         {
             continue;
@@ -117,7 +117,7 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
                 return -1;
             }
             token_ = msg.mutable_loginresult()->token();
-            cout << "Got server token:" << token_ << endl;
+            //cout << "Got server token:" << token_ << endl;
         }
         break;
     case CmdID::CS_CMD_MOVE:
@@ -128,7 +128,7 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
         {
             std::unique_lock<std::mutex> lock(g_objListMutex);
             g_objectList = *msg.mutable_mapinfo();
-            cout << msg.mutable_mapinfo()->object_size() << " objects received" << endl;
+            //cout << msg.mutable_mapinfo()->object_size() << " objects received" << endl;
             break;
         }
         break;

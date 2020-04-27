@@ -87,9 +87,9 @@ void draw_all_objects()
                 break;
             } 
             pic->draw_pixel(pos->mutable_pos()->x(), pos->mutable_pos()->y(), obj_pixel); 
-            printf("obj(%d,%d)\n", pos->mutable_pos()->x(), pos->mutable_pos()->y());
+            //printf("obj(%d,%d)\n", pos->mutable_pos()->x(), pos->mutable_pos()->y());
         } 
-        //darwin::runtime.update_drawable();
+        darwin::runtime.update_drawable();
 
         clock.sync();
     }
