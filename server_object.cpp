@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <thread>
 
 #include "server_object.h"
 #include "server_cs_processor.h"
@@ -18,6 +19,7 @@ using gameSvr::CSObject;
 
 int g_iObjectNum;
 OBJECT_MAP_TYPE g_objectMap;
+std::mutex g_objectMutex;
 extern GameServerImpl g_networkService;
 
 
@@ -197,6 +199,7 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
     default:
         break;
     }
+    std::unique_lock<std::mutex> lock(g_objectMutex);
     object.set_objid(g_iObjectNum++);
     g_objectMap.insert(make_pair(object.objid(), object));
     return object.objid();
@@ -204,6 +207,7 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
 
 Object *server_object_find(uint64_t objid)
 {
+    std::unique_lock<std::mutex> lock(g_objectMutex);
     auto res = g_objectMap.find(objid);
     if (res == g_objectMap.end())
     {
@@ -256,7 +260,21 @@ static void server_object_broadcast()
 
 void server_object_tick()
 {
+    std::unique_lock<std::mutex> lock(g_objectMutex);
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_move_tick);
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_combat_tick);
     server_object_broadcast();
+}
+
+
+int server_object_remove(uint64_t objId)
+{
+    std::unique_lock<std::mutex> lock(g_objectMutex);
+
+    OBJECT_MAP_TYPE::iterator it = g_objectMap.find(objId);
+    if (it != g_objectMap.end())
+    {
+        g_objectMap.erase(it);
+    }
+
 }

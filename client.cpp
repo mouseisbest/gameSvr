@@ -10,9 +10,12 @@
 
 
 using std::cout;
+using std::string;
+using std::endl;
 using gameSvr::Direction;
 using gameSvr::CSMapInfoS;
 using gameSvr::ObjType;
+
 
 #include <string>
 #include <random>
@@ -170,9 +173,20 @@ void start(TankGameClient *client )
 
 int main(int argc, char** argv) {
 
+    if (argc < 4)
+    {
+        cout << "usage: " << endl;
+        cout << "\t client address username password" << endl;
+        exit(1);
+    }
+    string address = string(argv[1]) + ":50051";
+    string username = argv[2];
+    string password = argv[3];
     TankGameClient client(
-        grpc::CreateChannel("localhost:50051",
-            grpc::InsecureChannelCredentials()));
+        grpc::CreateChannel(address,
+        grpc::InsecureChannelCredentials()),
+        username,
+        password);
 
 
 	darwin::timer::delay(1000);

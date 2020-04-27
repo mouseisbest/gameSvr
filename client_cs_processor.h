@@ -2,6 +2,7 @@
 #define __CLIENT_CS_PROCESSOR_H__
 
 #include <deque>
+#include <string>
 
 #include <grpc/grpc.h>
 #include <grpcpp/client_context.h>
@@ -28,7 +29,8 @@ typedef ClientReaderWriter<CSMessageC, CSMessageS> SERVERSTREAM;
 class TankGameClient 
 {
 public:
-    TankGameClient(std::shared_ptr<Channel> channel);
+    TankGameClient(std::shared_ptr<Channel> channel, std::string user_name, std::string password)
+;
     ~TankGameClient();
 
     void WaitForThreads();
@@ -50,6 +52,8 @@ private:
     std::deque<CSMessageC>                  queueSend_;
     std::deque<CSMessageS>                  queueRecv_;
     uint64_t                                token_;
+    std::string                             userName;
+    std::string                             password;
     
 };
 

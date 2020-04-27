@@ -16,6 +16,7 @@ typedef PLAYER_MAP_TYPE::reference PLAYER_ITEM_TYPE;
 
 
 int server_user_login(string user_name, string password);
+int server_user_logout(string user_name);
 Player* server_user_get_by_name(string user_name);
 Player* server_user_get_by_token(uint64_t token);
 

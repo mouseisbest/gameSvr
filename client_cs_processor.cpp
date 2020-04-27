@@ -2,7 +2,6 @@
 #include <iostream>
 #include <memory>
 #include <random>
-#include <string>
 #include <thread>
 #include <unistd.h>
 #include "client_cs_processor.h"
@@ -18,13 +17,15 @@ using gameSvr::CSMapInfoS;
 extern CSMapInfoS g_objectList;
 extern std::mutex g_objListMutex;
 
-TankGameClient::TankGameClient(std::shared_ptr<Channel> channel)
+TankGameClient::TankGameClient(std::shared_ptr<Channel> channel, std::string user_name, std::string password)
     : stub_(GameServer::NewStub(channel)), 
-    context_(), 
+    context_(),
     stream_(stub_->ClientMsgProcessor(&context_)),
     readerThread_(&TankGameClient::RecvMessageThread, this),
     writerThread_(&TankGameClient::SendMessageThread, this),
-    token_(0)
+    token_(0),
+    userName(user_name),
+    password(password)
 {
     TryToLogin();
 }

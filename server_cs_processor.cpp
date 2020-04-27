@@ -13,6 +13,7 @@ using std::endl;
 
 
 extern PLAYER_MAP_TYPE g_userMap;
+extern std::mutex g_userMutex;
 
 GameServerImpl g_networkService;
 auto g_networkFun = []() {
@@ -33,6 +34,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
 {
     int iRet = -1;
     CSMessageC msg;
+    string user_name;
     while (stream->Read(&msg)) 
     {
         printf("incoming msg (%d)\n", msg.cmd());
@@ -53,6 +55,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                     ret.mutable_loginresult()->set_token(player->token());
                     player->set_context((int64_t)stream);
                 }
+                user_name = loginInfo->username();
                 ret.set_ret(time(nullptr));
                 int iRet = stream->Write(ret);
                 cout << "write to client ret:" << iRet << endl;
@@ -78,6 +81,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
             break;
         }
     }
+    server_user_logout(user_name);
     cout << "Client connection closed." << endl;
     return Status::OK;
 }
@@ -132,6 +136,8 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 
 int GameServerImpl::BroadcastMsg(CSMessageS &msg)
 {
+    std::unique_lock<std::mutex> lock(g_userMutex);
+    cout << g_userMap.size() << " players online." << endl;
     for (PLAYER_MAP_TYPE::iterator it = g_userMap.begin(); 
         it != g_userMap.end(); ++it)
     {
