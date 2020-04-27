@@ -88,14 +88,15 @@ void TankGameClient::RecvMessageThread(void *parm)
     {
         CSMessageS response;
         int iRet = client->stream_->Read(&response);
+        cout << "Grpc ret: " << iRet << endl;
         if (iRet != true)
         {
            usleep(100000);
            continue;
         }
+        iRet = client->ProcessServerMessage(response);
         cout << "Recv Message:" << iRet <<  ",userid:" << response.mutable_loginresult()->token() 
             << ",ret:" << response.ret() << endl;
-        iRet = client->ProcessServerMessage(response);
         if (iRet)
         {
             continue;
@@ -116,7 +117,7 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
                 return -1;
             }
             token_ = msg.mutable_loginresult()->token();
-            //cout << "Got server token:" << token_ << endl;
+            cout << "Got server token:" << token_ << endl;
         }
         break;
     case CmdID::CS_CMD_MOVE:
@@ -127,6 +128,7 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
         {
             std::unique_lock<std::mutex> lock(g_objListMutex);
             g_objectList = *msg.mutable_mapinfo();
+            cout << msg.mutable_mapinfo()->object_size() << " objects received" << endl;
             break;
         }
         break;

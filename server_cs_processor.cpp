@@ -129,6 +129,10 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
     std::unique_lock<std::mutex> lock(*mutex);
     LPCLIENTCONTEXT stream = (LPCLIENTCONTEXT)player->context();
     int iRet = stream->Write(msg);
+    if (msg.cmd() == CmdID::CS_CMD_MAP_INFO)
+    {
+        cout << "object pack has " << msg.mutable_mapinfo()->object_size() << endl;
+    }
     printf("%s: send msg(%d) ret(%d)\n", __FUNCTION__, msg.cmd(), iRet);
     return 0;
 }
