@@ -39,8 +39,8 @@ int TankGameClient::TryToLogin()
     CSMessageC msg = {};
     msg.set_cmd(CmdID::CS_CMD_LOGIN);       
     msg.set_seq(time(NULL));
-    msg.mutable_logininfo()->set_username("test_user");
-    msg.mutable_logininfo()->set_password("123");
+    msg.mutable_logininfo()->set_username(userName);
+    msg.mutable_logininfo()->set_password(password);
     SendMessage(msg);
     return 0;
 }

@@ -42,7 +42,7 @@ void draw_all_objects()
 {
     auto pic = darwin::runtime.get_drawable();
     darwin::sync_clock clock(30);
-    darwin::pixel obj_pixel(wchUp, true, false, darwin::colors::white, darwin::colors::black);
+    darwin::pixel obj_pixel('#', true, false, darwin::colors::white, darwin::colors::black);
     while (1)
     {
         usleep(100000);
@@ -89,7 +89,8 @@ void draw_all_objects()
             pic->draw_pixel(pos->mutable_pos()->x(), pos->mutable_pos()->y(), obj_pixel); 
             printf("obj(%d,%d)\n", pos->mutable_pos()->x(), pos->mutable_pos()->y());
         } 
-        darwin::runtime.update_drawable();
+        //darwin::runtime.update_drawable();
+
         clock.sync();
     }
 }

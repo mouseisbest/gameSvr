@@ -276,5 +276,5 @@ int server_object_remove(uint64_t objId)
     {
         g_objectMap.erase(it);
     }
-
+    return 0;
 }

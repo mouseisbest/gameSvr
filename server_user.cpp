@@ -107,4 +107,5 @@ int server_user_logout(string user_name)
         g_userMap.erase(it);
         cout << g_userMap.size() << " players online now." << endl;
     }
+    return 0;
 }
