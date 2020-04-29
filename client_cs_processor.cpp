@@ -72,7 +72,7 @@ void TankGameClient::SendMessageThread(void *parm)
         }
         int iRet = client->stream_->Write(client->queueSend_.front());
         client->queueSend_.pop_front();
-        //cout << "Send msg in queue ret:" << iRet << endl;
+        cout << "Send msg in queue ret:" << iRet << endl;
     }
 }
 

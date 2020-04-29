@@ -98,12 +98,8 @@ void draw_all_objects()
 void start(TankGameClient *client )
 {
 	darwin::sync_clock clock(30);
-	//auto pic = darwin::runtime.get_drawable();
-	//tank= {0, (int)(0.5*pic->get_height())};
-	//int frame=0;
     Direction dir = Direction::DIRECTION_EAST;
 	while(true) {
-	//	clock.reset();
 		if(darwin::runtime.is_kb_hit()) {
 			switch(darwin::runtime.get_kb_hit()) {
 			case 'w':
@@ -113,39 +109,45 @@ void start(TankGameClient *client )
 				    --tank[1];
                     head_pix.set_char('U');
                     dir = Direction::DIRECTION_NORTH;
+                    client->SendMoveReq(dir);
                 }
-				break;
-			case 's':
-				if(god_mode||heading!=-1)
+                break;
+            case 's':
+                if(god_mode||heading!=-1)
                 {
-					heading=-2;
-				    ++tank[1];
+                    heading=-2;
+                    ++tank[1];
                     head_pix.set_char('D');
                     dir = Direction::DIRECTION_SOUTH;
+                    client->SendMoveReq(dir);
                 }
-				break;
-			case 'a':
-				if(god_mode||heading!=2)
+                break;
+            case 'a':
+                if(god_mode||heading!=2)
                 {
-					heading=1;
-				    --tank[0];
+                    heading=1;
+                    --tank[0];
                     head_pix.set_char('L');
                     dir = Direction::DIRECTION_WEST;
+                    client->SendMoveReq(dir);
                 }
-				break;
-			case 'd':
-				if(god_mode||heading!=1)
+                break;
+            case 'd':
+                if(god_mode||heading!=1)
                 {
-					heading=2;
-				    ++tank[0];
+                    heading=2;
+                    ++tank[0];
                     head_pix.set_char('R');
                     dir = Direction::DIRECTION_EAST;
+                    client->SendMoveReq(dir);
                 }
 				break;
+            case ' ':
+                client->SendFireReq();
+                break;
             default:
                 break;
 			}
-            client->SendMoveReq(dir);
 		}
         if (tank[0] < 0)
         {
@@ -196,15 +198,6 @@ int main(int argc, char** argv) {
 
     std::thread drawThread(draw_all_objects);
     start(&client);
-
-    /*for (;;)
-    {
-        CSMessageC msg;
-        client.SendMessage(msg);
-        sleep(1);
-    }*/
-
-
 
     drawThread.join();
     client.WaitForThreads();

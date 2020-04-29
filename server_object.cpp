@@ -138,7 +138,7 @@ static void server_object_init_tank(Object &object)
     info->set_speed(2);
     info->set_damage(10);
     info->set_defense(5);
-    info->set_lastfiretime(0);
+    info->set_lastfiretime(get_time());
     object.mutable_position()->mutable_pos()->set_x(5);
     object.mutable_position()->mutable_pos()->set_y(5);
 }

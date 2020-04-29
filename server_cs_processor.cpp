@@ -58,7 +58,7 @@ Status GameServerImpl::ClientMsgProcessor(ServerContext* context,
                 user_name = loginInfo->username();
                 ret.set_ret(time(nullptr));
                 int iRet = stream->Write(ret);
-                cout << "write to client ret:" << iRet << endl;
+                //cout << "write to client ret:" << iRet << endl;
                 break;
             }
         default:
@@ -129,11 +129,11 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
     std::unique_lock<std::mutex> lock(*mutex);
     LPCLIENTCONTEXT stream = (LPCLIENTCONTEXT)player->context();
     int iRet = stream->Write(msg);
-    if (msg.cmd() == CmdID::CS_CMD_MAP_INFO)
+    /*if (msg.cmd() == CmdID::CS_CMD_MAP_INFO)
     {
         cout << "object pack has " << msg.mutable_mapinfo()->object_size() << endl;
-    }
-    printf("%s: send msg(%d) ret(%d)\n", __FUNCTION__, msg.cmd(), iRet);
+    }*/
+    //printf("%s: send msg(%d) ret(%d)\n", __FUNCTION__, msg.cmd(), iRet);
     return 0;
 }
 
@@ -141,7 +141,7 @@ int GameServerImpl::SendMessage(Player *player, CSMessageS &msg)
 int GameServerImpl::BroadcastMsg(CSMessageS &msg)
 {
     std::unique_lock<std::mutex> lock(g_userMutex);
-    cout << g_userMap.size() << " players online." << endl;
+    //cout << g_userMap.size() << " players online." << endl;
     for (PLAYER_MAP_TYPE::iterator it = g_userMap.begin(); 
         it != g_userMap.end(); ++it)
     {
