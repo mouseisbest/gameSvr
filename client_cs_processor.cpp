@@ -120,10 +120,10 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
             //cout << "Got server token:" << token_ << endl;
         }
         break;
-    case CmdID::CS_CMD_MOVE:
+    /*case CmdID::CS_CMD_MOVE:
         {
         }
-        break;
+        break;*/
     case CmdID::CS_CMD_MAP_INFO:
         {
             std::unique_lock<std::mutex> lock(g_objListMutex);
@@ -159,5 +159,8 @@ int TankGameClient::SendMoveReq(Direction dir)
 
 int TankGameClient::SendFireReq()
 {
+    CSMessageC msg = {};
+    msg.set_cmd(CmdID::CS_CMD_FIRE);
+    SendMessage(msg);
     return 0;
 }

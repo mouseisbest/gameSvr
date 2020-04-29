@@ -38,7 +38,6 @@ message CSMoveS {
 }
 
 message CSFireC {
-    Direction Dir       = 1;
 }
 
 message CSBattleInfo {
