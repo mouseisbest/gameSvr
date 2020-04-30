@@ -82,7 +82,10 @@ void draw_all_objects()
                     break;
                 }
             case ObjType::OBJ_TYPE_BULLET:
-                break;
+                {
+                    obj_pixel.set_char('#');
+                    break;
+                }
             default:
                 break;
             } 

@@ -10,6 +10,10 @@
 
 using std::for_each;
 using std::make_pair;
+
+using std::cout;
+using std::endl;
+
 using gameSvr::ObjType;
 using gameSvr::Tank;
 using gameSvr::def_enum;
@@ -26,11 +30,19 @@ extern GameServerImpl g_networkService;
 void server_object_position_change(Object &obj, Direction dir)
 {
     auto pos = obj.mutable_position();
-    auto info = obj.mutable_tank()->mutable_battleinfo();
 
     int x = pos->mutable_pos()->x();
     int y = pos->mutable_pos()->y();
-    int speed = info->speed();
+    int speed = 0; 
+    if (obj.type() == ObjType::OBJ_TYPE_TANK)
+    {
+        auto info = obj.mutable_tank()->mutable_battleinfo();
+        speed = info->speed();
+    }
+    else
+    {
+        speed = obj.mutable_bullet()->speed();
+    }
     // 更新位置
     switch (dir)
     {
@@ -62,7 +74,10 @@ void server_object_position_change(Object &obj, Direction dir)
     if (x < 0 || x >= res_enum::MAX_MAP_WIDTH || 
         y < 0 || y >= res_enum::MAX_MAP_HEIGHT)
     {
-        obj.set_collision(1);
+        if (obj.type() != ObjType::OBJ_TYPE_TANK)
+        {
+            obj.set_collision(1);
+        }
     }
     if (x < 0)
     {
@@ -82,17 +97,25 @@ void server_object_position_change(Object &obj, Direction dir)
     }
     pos->mutable_pos()->set_x(x);
     pos->mutable_pos()->set_y(y);
+    cout << "dir" << pos->dir() << " x:" << pos->mutable_pos()->x() << " y:" << pos->mutable_pos()->y() << endl;
 }
 
 
 void server_object_tick_bullet(Object &obj)
 {
-    server_object_position_change(obj, obj.mutable_position()->dir());
+
+    static int iTickCount = 0;
+    iTickCount = (++iTickCount) % 5;
+    if (0 == iTickCount)
+    {
+        server_object_position_change(obj, obj.mutable_position()->dir());
+    }
 }
 
 
-void server_object_move_tick(OBJECT_ITEM_TYPE item)
+static void server_object_move_tick(OBJECT_ITEM_TYPE item)
 {
+    cout << __FUNCTION__ << endl;
     Object *object = &item.second;
     switch (object->type())
     {
@@ -111,7 +134,7 @@ void server_object_move_tick(OBJECT_ITEM_TYPE item)
 
 }
 
-void server_object_combat_tick(OBJECT_ITEM_TYPE item)
+static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
 {
     Object *object = &item.second;
     switch (object->type())
@@ -152,11 +175,12 @@ static int server_object_create_bullet_check(Object *parent, time_t time)
     }
 
     auto tank = parent->mutable_tank();
-    if (tank->mutable_battleinfo()->lastfiretime() - get_time() < def_enum::MIN_TANK_FIRE_TIME)
+    cout << "last fire " << tank->mutable_battleinfo()->lastfiretime() << endl;
+/*    if (tank->mutable_battleinfo()->lastfiretime() - get_time() < def_enum::MIN_TANK_FIRE_TIME)
     {
         return -1;
     }
-
+*/
 
     return 0;
 }
@@ -181,6 +205,7 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
             }
             Object *parent = (Object*)param1;
             time_t now = get_time();
+            // cout << "try bullet " << now << endl;
             int iRet = server_object_create_bullet_check(&object, now);
             if (iRet)
             {
@@ -193,6 +218,7 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
             object.mutable_position()->mutable_pos()->set_y(parent->mutable_position()->mutable_pos()->y());
             object.mutable_position()->set_dir(parent->mutable_position()->dir());
             object.mutable_bullet()->set_speed(def_enum::DEFAULT_BULLET_SPEED);
+            // cout << "bullet created " << object.objid() << endl;
 
             break;
         }
@@ -263,6 +289,17 @@ void server_object_tick()
     std::unique_lock<std::mutex> lock(g_objectMutex);
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_move_tick);
     for_each(g_objectMap.begin(), g_objectMap.end(), server_object_combat_tick);
+    for (auto it = g_objectMap.begin(); it != g_objectMap.end(); )
+    {
+        if (it->second.collision())
+        {
+            g_objectMap.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
     server_object_broadcast();
 }
 
