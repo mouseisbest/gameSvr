@@ -68,6 +68,14 @@ message CSMapInfoS { // MAX_OBJECT_IN_MAP_NUM
     repeated CSObject   Object      = 1;
 }
 
+
+message CSObjectAttrSyncS {
+    int32               AttrType        = 1;  // 见AttrType
+    uint64              Value           = 2;
+    
+
+}
+
 // 客户端消息
 message CSMessageC {
     int32               Cmd           = 1;
@@ -86,7 +94,8 @@ message CSMessageS {
     int32 Seq = 2;
     int32 Ret = 3;
     oneof Data {
-        CSLoginS        LoginResult         = 10;        
-        CSMapInfoS      MapInfo             = 11;
+        CSLoginS            LoginResult         = 10;        
+        CSMapInfoS          MapInfo             = 11;
+        CSObjectAttrSyncS   AttrSync            = 12;
     }
 }
