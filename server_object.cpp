@@ -97,7 +97,7 @@ void server_object_position_change(Object &obj, Direction dir)
     }
     pos->mutable_pos()->set_x(x);
     pos->mutable_pos()->set_y(y);
-    cout << "dir" << pos->dir() << " x:" << pos->mutable_pos()->x() << " y:" << pos->mutable_pos()->y() << endl;
+    //cout << "dir" << pos->dir() << " x:" << pos->mutable_pos()->x() << " y:" << pos->mutable_pos()->y() << endl;
 }
 
 
@@ -115,7 +115,6 @@ void server_object_tick_bullet(Object &obj)
 
 static void server_object_move_tick(OBJECT_ITEM_TYPE item)
 {
-    cout << __FUNCTION__ << endl;
     Object *object = &item.second;
     switch (object->type())
     {
@@ -145,6 +144,7 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
         }
     case ObjType::OBJ_TYPE_BULLET:
         {
+            
             break;
         }
     default:
@@ -175,12 +175,11 @@ static int server_object_create_bullet_check(Object *parent, time_t time)
     }
 
     auto tank = parent->mutable_tank();
-    cout << "last fire " << tank->mutable_battleinfo()->lastfiretime() << endl;
-/*    if (tank->mutable_battleinfo()->lastfiretime() - get_time() < def_enum::MIN_TANK_FIRE_TIME)
+    if (get_time() - tank->mutable_battleinfo()->lastfiretime() < def_enum::MIN_TANK_FIRE_TIME)
     {
         return -1;
     }
-*/
+
 
     return 0;
 }
@@ -206,18 +205,21 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
             Object *parent = (Object*)param1;
             time_t now = get_time();
             // cout << "try bullet " << now << endl;
-            int iRet = server_object_create_bullet_check(&object, now);
+            int iRet = server_object_create_bullet_check(parent, now);
             if (iRet)
             {
                 return iRet;
             }
             auto tank = parent->mutable_tank();
             tank->mutable_battleinfo()->set_lastfiretime(now);
+            //cout << tank->mutable_battleinfo()->lastfiretime() << endl;
             object.set_type(ObjType::OBJ_TYPE_BULLET);
             object.mutable_position()->mutable_pos()->set_x(parent->mutable_position()->mutable_pos()->x());
             object.mutable_position()->mutable_pos()->set_y(parent->mutable_position()->mutable_pos()->y());
             object.mutable_position()->set_dir(parent->mutable_position()->dir());
             object.mutable_bullet()->set_speed(def_enum::DEFAULT_BULLET_SPEED);
+            object.mutable_bullet()->set_linkobj(parent->objid());
+            // cout << "tank objid: " << parent->objid() << " fired" << endl;
             // cout << "bullet created " << object.objid() << endl;
 
             break;
@@ -280,7 +282,7 @@ static void server_object_broadcast()
         auto csObj = array->add_object();
         server_object_to_cs_object(it->second, *csObj);
     }
-    printf("%s: %d objects packed\n", __FUNCTION__, array->object_size());
+    //printf("%s: %d objects packed\n", __FUNCTION__, array->object_size());
     g_networkService.BroadcastMsg(msg);
 }
 

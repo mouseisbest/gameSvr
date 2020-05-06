@@ -10,7 +10,7 @@ enum def_enum {
     MAX_PLAYER_NUM                      = 10;
     MAX_MAP_NUM                         = 10;
     MIN_TANK_FIRE_TIME                  = 3;
-    DEFAULT_BULLET_SPEED                = 1;
+    DEFAULT_BULLET_SPEED                = 3;;
     MAX_OBJECT_IN_MAP_NUM               = 20;
     
 
