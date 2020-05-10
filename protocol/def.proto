@@ -60,10 +60,11 @@ message Tank {
 
 
 message Object {
-    ObjType         Type                = 1;
-    int64           ObjID               = 2;
-    PositionInfo    Position            = 3;
-    int32           Collision           = 4;
+    int64           Flag                = 1;
+    ObjType         Type                = 2;
+    int64           ObjID               = 3;
+    PositionInfo    Position            = 4;
+    int32           Collision           = 5;
     oneof           Data {
         Tank        Tank                = 10;
         Bullet      Bullet              = 11;
