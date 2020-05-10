@@ -69,11 +69,14 @@ message CSMapInfoS { // MAX_OBJECT_IN_MAP_NUM
 }
 
 
-message CSObjectAttrSyncS {
-    int32               AttrType        = 1;  // 见AttrType
+message ObjectAttrSyncItem {
+    AttrType            AttrType        = 1;  // 见AttrType
     uint64              Value           = 2;
-    
+}
 
+
+message CSObjectAttrSyncS {
+    repeated ObjectAttrSyncItem SyncData = 1;
 }
 
 // 客户端消息

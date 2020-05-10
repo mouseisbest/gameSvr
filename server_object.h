@@ -12,12 +12,13 @@ using gameSvr::Direction;
 
 typedef map<uint64_t, Object> OBJECT_MAP_TYPE;
 typedef OBJECT_MAP_TYPE::reference OBJECT_ITEM_TYPE;
+typedef vector<Object*> OBJECT_LIST_TYPE;
 
 void server_object_position_change(Object &obj, Direction dir);
 uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2);
 int server_object_remove(uint64_t objId);
 Object *server_object_find(uint64_t objid);
-vector<Object*> server_object_find_by_pos(int x, int y);
+OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y);
 
 void server_object_tick();
 

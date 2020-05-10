@@ -15,6 +15,7 @@ using std::cout;
 using std::endl;
 
 using gameSvr::ObjType;
+using gameSvr::AttrType;
 using gameSvr::Tank;
 using gameSvr::def_enum;
 using gameSvr::res_enum;
@@ -26,6 +27,47 @@ OBJECT_MAP_TYPE g_objectMap;
 std::mutex g_objectMutex;
 extern GameServerImpl g_networkService;
 
+
+
+OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y)
+{
+    OBJECT_LIST_TYPE result;
+    for (auto it = g_objectMap.begin(); it != g_objectMap.end(); )
+    {
+        Object *pObject = &it->second;
+        if (pObject->mutable_position()->mutable_pos()->x() == x &&
+            pObject->mutable_position()->mutable_pos()->y() == y)
+        {
+            result.push_back(pObject);
+        }
+    }
+    /*cout << "found " << nearbyObjList.size() << " objects in " << 
+        object->mutable_position()->mutable_pos()->x() << "," <<
+        object->mutable_position()->mutable_pos()->y() << endl;*/
+    return result;
+}
+
+static void server_object_set_attr_dirty(Object &obj, int64_t iAttrType)
+{
+    int64_t flag = obj.flag();
+    flag &= iAttrType;
+    obj.set_flag(flag);
+}
+
+
+static void server_object_clear_attr_dirty(Object &obj, int64_t iAttrType)
+{
+    int64_t flag = obj.flag();
+    flag &= (~iAttrType);
+    obj.set_flag(flag);
+}
+
+
+static void server_object_set_hp(Object &obj, int iHP)
+{
+    obj.mutable_tank()->mutable_battleinfo()->set_hp(iHP);
+    server_object_set_attr_dirty(obj, AttrType::ATTR_HP);
+}
 
 void server_object_position_change(Object &obj, Direction dir)
 {
@@ -144,7 +186,25 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
         }
     case ObjType::OBJ_TYPE_BULLET:
         {
-            
+            /*OBJECT_LIST_TYPE nearbyObjList = server_object_find_by_pos(
+                object->mutable_position()->mutable_pos()->x(),
+                object->mutable_position()->mutable_pos()->y());
+            cout << "found " << nearbyObjList.size() << " objects in " << 
+                object->mutable_position()->mutable_pos()->x() << "," <<
+                object->mutable_position()->mutable_pos()->y() << endl;
+            for (int i = 0; i < nearbyObjList.size(); ++i)
+            {
+                Object *nearbyObj = nearbyObjList[i];
+                if (nullptr == nearbyObj)
+                {
+                    continue;
+                }
+                if (ObjType::OBJ_TYPE_TANK == nearbyObj->type())
+                {
+                    
+                }
+            }*/
+             
             break;
         }
     default:
