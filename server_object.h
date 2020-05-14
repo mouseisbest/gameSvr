@@ -18,6 +18,7 @@ void server_object_position_change(Object &obj, Direction dir);
 uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2);
 int server_object_remove(uint64_t objId);
 Object *server_object_find(uint64_t objid);
+Object *server_object_find_no_mutex(uint64_t objid);
 OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y);
 
 void server_object_tick();

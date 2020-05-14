@@ -29,6 +29,26 @@ extern GameServerImpl g_networkService;
 
 
 
+OBJECT_LIST_TYPE server_object_find_by_object(Object &object)
+{
+    OBJECT_LIST_TYPE result;
+    auto objPos = object.mutable_position()->mutable_pos();
+    for (auto it = g_objectMap.begin(); it != g_objectMap.end(); )
+    {
+        Object *pObject = &it->second;
+        if (pObject->mutable_position()->mutable_pos()->x() == objPos->x() &&
+            pObject->mutable_position()->mutable_pos()->y() == objPos->y() &&
+            pObject->objid() != object.objid())
+        {
+            result.push_back(pObject);
+        }
+        ++it;
+    }
+    return result;
+}
+
+
+
 OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y)
 {
     OBJECT_LIST_TYPE result;
@@ -186,12 +206,20 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
         }
     case ObjType::OBJ_TYPE_BULLET:
         {
-            /*OBJECT_LIST_TYPE nearbyObjList = server_object_find_by_pos(
-                object->mutable_position()->mutable_pos()->x(),
-                object->mutable_position()->mutable_pos()->y());
-            cout << "found " << nearbyObjList.size() << " objects in " << 
-                object->mutable_position()->mutable_pos()->x() << "," <<
-                object->mutable_position()->mutable_pos()->y() << endl;
+            OBJECT_LIST_TYPE nearbyObjList = server_object_find_by_object(*object);
+            Object *relatedObj = server_object_find_no_mutex(object->mutable_bullet()->linkobj());
+            if (nullptr == relatedObj)
+            {
+                cout << "bullet " << object->objid() << "'s tank obj not found." << endl;
+                break;
+            }
+            if (nearbyObjList.size())
+            {
+                cout << "found " << nearbyObjList.size() << " objects in " << 
+                    object->mutable_position()->mutable_pos()->x() << "," <<
+                    object->mutable_position()->mutable_pos()->y() << endl;
+            }
+            int iIsHit = 0;
             for (int i = 0; i < nearbyObjList.size(); ++i)
             {
                 Object *nearbyObj = nearbyObjList[i];
@@ -199,11 +227,26 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
                 {
                     continue;
                 }
+                // 如果是坦克，则给它减血
                 if (ObjType::OBJ_TYPE_TANK == nearbyObj->type())
                 {
-                    
+                    if (nearbyObj->objid() == relatedObj->objid())
+                    {
+                        continue;
+                    }
+                    int iCurHp = nearbyObj->mutable_tank()->mutable_battleinfo()->hp();
+                    iCurHp -= relatedObj->mutable_tank()->mutable_battleinfo()->damage();
+                    printf("%s:tank(%ld) is hit by tank(%ld)'s bullet(%ld)\n",
+                        __FUNCTION__, nearbyObj->objid(), relatedObj->objid(), 
+                        object->objid());
+                    server_object_set_hp(*nearbyObj, iCurHp);
+                    iIsHit = 1;
                 }
-            }*/
+            }
+            if (iIsHit)
+            {
+                object->set_collision(1);
+            }
              
             break;
         }
@@ -292,6 +335,17 @@ uint64_t server_object_create(ObjType objType, uint64_t param1, uint64_t param2)
     g_objectMap.insert(make_pair(object.objid(), object));
     return object.objid();
 }
+
+Object *server_object_find_no_mutex(uint64_t objid)
+{
+    auto res = g_objectMap.find(objid);
+    if (res == g_objectMap.end())
+    {
+        return nullptr;
+    }
+    return &res->second;
+}
+
 
 Object *server_object_find(uint64_t objid)
 {
