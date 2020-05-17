@@ -70,7 +70,7 @@ OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y)
 static void server_object_set_attr_dirty(Object &obj, int64_t iAttrType)
 {
     int64_t flag = obj.flag();
-    flag &= iAttrType;
+    flag &= (1 << iAttrType);
     obj.set_flag(flag);
 }
 
@@ -78,8 +78,13 @@ static void server_object_set_attr_dirty(Object &obj, int64_t iAttrType)
 static void server_object_clear_attr_dirty(Object &obj, int64_t iAttrType)
 {
     int64_t flag = obj.flag();
-    flag &= (~iAttrType);
+    flag &= (~(1 << iAttrType));
     obj.set_flag(flag);
+}
+
+static bool server_object_get_attr_flag(Object &obj, int64_t iAttrType)
+{
+    return obj.flag() & (1 << iAttrType);
 }
 
 
@@ -368,7 +373,7 @@ static void server_object_to_cs_object(Object &obj, CSObject &csObj)
     case ObjType::OBJ_TYPE_TANK:
         {
             auto battle_info = csObj.mutable_tank()->mutable_info();
-            battle_info->set_hp(obj.mutable_tank()->mutable_battleinfo()->hp());
+//            battle_info->set_hp(obj.mutable_tank()->mutable_battleinfo()->hp());
             battle_info->set_dir(obj.mutable_position()->dir());
             break;
         }
@@ -400,6 +405,45 @@ static void server_object_broadcast()
     g_networkService.BroadcastMsg(msg);
 }
 
+static void server_attr_broadcast()
+{
+    if (g_objectMap.size() == 0)
+    {
+        return;
+    }
+    for (OBJECT_MAP_TYPE::iterator it = g_objectMap.begin(); it != g_objectMap.end(); ++it)
+    {
+        CSMessageS msg;
+        msg.set_cmd(CmdID::CS_CMD_ATTR_SYNC);
+        auto array = msg.mutable_attrsync();
+        Object *obj = &it->second;
+        array->set_objid(obj->objid());
+        if (obj->type() != ObjType::OBJ_TYPE_TANK)
+        {
+            continue;
+        }
+        for (int i = 0; i < AttrType::ATTR_MAX; ++i)
+        {
+            if (server_object_get_attr_flag(*obj, i)) // 标记有数据更改
+            {
+                auto csAttr = array->add_syncdata();
+                csAttr->set_attrtype((AttrType)i);
+                switch (i)
+                {
+                case AttrType::ATTR_HP:
+                    csAttr->set_value(obj->mutable_tank()->mutable_battleinfo()->hp());
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        g_networkService.BroadcastMsg(msg);
+    }
+    //printf("%s: %d objects packed\n", __FUNCTION__, array->object_size());
+}
+
+
 void server_object_tick()
 {
     std::unique_lock<std::mutex> lock(g_objectMutex);
@@ -417,6 +461,7 @@ void server_object_tick()
         }
     }
     server_object_broadcast();
+    server_attr_broadcast();
 }
 
 

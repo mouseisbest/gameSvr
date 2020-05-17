@@ -16,6 +16,7 @@ enum CmdID {
     CS_CMD_MOVE         = 2;
     CS_CMD_MAP_INFO     = 3;
     CS_CMD_FIRE         = 4;
+    CS_CMD_ATTR_SYNC    = 5;
 }
 
 
@@ -76,7 +77,8 @@ message ObjectAttrSyncItem {
 
 
 message CSObjectAttrSyncS {
-    repeated ObjectAttrSyncItem SyncData = 1;
+    int64               ObjID       = 1;
+    repeated ObjectAttrSyncItem SyncData = 2;
 }
 
 // 客户端消息

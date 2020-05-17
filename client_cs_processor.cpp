@@ -13,6 +13,7 @@ using grpc::Status;
 using gameSvr::CSLoginC;
 using gameSvr::CmdID;
 using gameSvr::CSMapInfoS;
+using gameSvr::ObjType;
 
 extern CSMapInfoS g_objectList;
 extern std::mutex g_objListMutex;
@@ -106,6 +107,7 @@ void TankGameClient::RecvMessageThread(void *parm)
 
 
 
+
 int TankGameClient::ProcessServerMessage(CSMessageS &msg)
 {
     switch (msg.cmd())
@@ -127,11 +129,40 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
     case CmdID::CS_CMD_MAP_INFO:
         {
             std::unique_lock<std::mutex> lock(g_objListMutex);
+            auto oldList = g_objectList;
             g_objectList = *msg.mutable_mapinfo();
+            // 将旧数据里的血量覆盖回去
+            int iOldSize = oldList.object_size();
+            int iNewSize = g_objectList.object_size();
+            for (int i = 0; i < iNewSize; ++i)
+            {
+                auto newObj = g_objectList.object(i);
+                if (newObj.type() != ObjType::OBJ_TYPE_TANK)
+                {
+                    continue;
+                }
+                for (int j = 0; j < iOldSize; ++j)
+                {
+                    auto oldObj = oldList.object(j);
+                    if (newObj.objid() != oldObj.objid() ||
+                        oldObj.type() != ObjType::OBJ_TYPE_TANK)
+                    {
+                        continue;
+                    }
+                    newObj.mutable_tank()->mutable_info()->set_hp(
+                        oldObj.mutable_tank()->mutable_info()->hp());
+                }
+            }
+
             //cout << msg.mutable_mapinfo()->object_size() << " objects received" << endl;
             break;
         }
         break;
+    case CmdID::CS_CMD_ATTR_SYNC:
+        {
+            std::unique_lock<std::mutex> lock(g_objListMutex);
+            break;
+        }
     default:
         break;
     }
