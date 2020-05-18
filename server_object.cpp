@@ -91,6 +91,7 @@ static bool server_object_get_attr_flag(Object &obj, int64_t iAttrType)
 static void server_object_set_hp(Object &obj, int iHP)
 {
     obj.mutable_tank()->mutable_battleinfo()->set_hp(iHP);
+    cout << __FUNCTION__ << "Obj " << obj.objid() << " current hp is: " << obj.mutable_tank()->mutable_battleinfo()->hp() << endl;
     server_object_set_attr_dirty(obj, AttrType::ATTR_HP);
 }
 
