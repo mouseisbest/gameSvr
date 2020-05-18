@@ -41,11 +41,10 @@ bool god_mode=true;
 void draw_all_objects()
 {
     auto pic = darwin::runtime.get_drawable();
-    darwin::sync_clock clock(30);
     darwin::pixel obj_pixel('#', true, false, darwin::colors::white, darwin::colors::black);
     while (1)
     {
-        usleep(100000);
+        usleep(1000000);
         CSMapInfoS data;
         int iSize = 0;
         {
@@ -93,8 +92,6 @@ void draw_all_objects()
             //printf("obj(%d,%d)\n", pos->mutable_pos()->x(), pos->mutable_pos()->y());
         } 
         darwin::runtime.update_drawable();
-
-        clock.sync();
     }
 }
 
