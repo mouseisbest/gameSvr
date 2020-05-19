@@ -97,7 +97,7 @@ void server_user_single_tick(PLAYER_ITEM_TYPE item)
 int server_user_logout(string user_name)
 {
     std::unique_lock<std::mutex> lock(g_userMutex);
-    cout << user_name << " try to log out" << endl;
+    //cout << user_name << " try to log out" << endl;
     PLAYER_MAP_TYPE::iterator it = g_userMap.find(user_name);
     if (it != g_userMap.end())
     {

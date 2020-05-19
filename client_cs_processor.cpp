@@ -14,6 +14,8 @@ using gameSvr::CSLoginC;
 using gameSvr::CmdID;
 using gameSvr::CSMapInfoS;
 using gameSvr::ObjType;
+using gameSvr::CSObject;
+using gameSvr::AttrType;
 
 extern CSMapInfoS g_objectList;
 extern std::mutex g_objListMutex;
@@ -161,6 +163,42 @@ int TankGameClient::ProcessServerMessage(CSMessageS &msg)
     case CmdID::CS_CMD_ATTR_SYNC:
         {
             std::unique_lock<std::mutex> lock(g_objListMutex);
+            auto sync = msg.mutable_attrsync();
+            CSObject *obj = nullptr;
+            int iObjSize = g_objectList.object_size();
+            for (int j = 0; j < iObjSize; ++j)
+            {
+                auto oldObj = &g_objectList.object(j);
+                if (oldObj->objid() == sync->objid() ||
+                    oldObj->type() != ObjType::OBJ_TYPE_TANK)
+                {
+                    obj = (CSObject*)oldObj;
+                }
+            }
+            if (nullptr == obj)
+            {
+                break;
+            }
+
+            int iAttrSize = sync->syncdata_size();
+            for (int i = 0; i < iAttrSize; ++i)
+            {
+                auto syncItem = sync->syncdata(i);
+                switch (syncItem.attrtype())
+                {
+                case AttrType::ATTR_HP:
+                    {
+                        obj->mutable_tank()->mutable_info()->set_hp(syncItem.value());
+                        cout << "object " << obj->objid() << " hp change to " << 
+                            obj->mutable_tank()->mutable_info()->hp() << endl;
+                        break;
+                    }
+                default:
+                    break;
+                }
+            }
+
+
             break;
         }
     default:

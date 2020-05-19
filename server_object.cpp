@@ -216,14 +216,14 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
             Object *relatedObj = server_object_find_no_mutex(object->mutable_bullet()->linkobj());
             if (nullptr == relatedObj)
             {
-                cout << "bullet " << object->objid() << "'s tank obj not found." << endl;
+                //cout << "bullet " << object->objid() << "'s tank obj not found." << endl;
                 break;
             }
             if (nearbyObjList.size())
             {
-                cout << "found " << nearbyObjList.size() << " objects in " << 
+                /*cout << "found " << nearbyObjList.size() << " objects in " << 
                     object->mutable_position()->mutable_pos()->x() << "," <<
-                    object->mutable_position()->mutable_pos()->y() << endl;
+                    object->mutable_position()->mutable_pos()->y() << endl;*/
             }
             int iIsHit = 0;
             for (int i = 0; i < nearbyObjList.size(); ++i)
@@ -433,15 +433,20 @@ static void server_attr_broadcast()
                 {
                 case AttrType::ATTR_HP:
                     csAttr->set_value(obj->mutable_tank()->mutable_battleinfo()->hp());
+                    server_object_clear_attr_dirty(*obj, AttrType::ATTR_HP);
                     break;
                 default:
                     break;
                 }
             }
         }
+        if (array->syncdata_size() <= 0)
+        {
+            continue;
+        }
+        printf("%s: %d attr change packed\n", __FUNCTION__, array->syncdata_size());
         g_networkService.BroadcastMsg(msg);
     }
-    //printf("%s: %d objects packed\n", __FUNCTION__, array->object_size());
 }
 
 
