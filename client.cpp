@@ -41,6 +41,7 @@ bool god_mode=true;
 void draw_all_objects()
 {
     auto pic = darwin::runtime.get_drawable();
+    pic->resize(40, 24);
     darwin::pixel obj_pixel('#', true, false, darwin::colors::white, darwin::colors::black);
     while (1)
     {

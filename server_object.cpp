@@ -70,7 +70,7 @@ OBJECT_LIST_TYPE server_object_find_by_pos(int x, int y)
 static void server_object_set_attr_dirty(Object &obj, int64_t iAttrType)
 {
     int64_t flag = obj.flag();
-    flag &= (1 << iAttrType);
+    flag |= (1 << iAttrType);
     obj.set_flag(flag);
 }
 
@@ -425,6 +425,8 @@ static void server_attr_broadcast()
         }
         for (int i = 0; i < AttrType::ATTR_MAX; ++i)
         {
+            if (obj->flag())
+                cout << "obj " << obj->objid() << " flag is:" << obj->flag() << endl;;
             if (server_object_get_attr_flag(*obj, i)) // 标记有数据更改
             {
                 auto csAttr = array->add_syncdata();
