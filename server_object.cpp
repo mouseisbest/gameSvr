@@ -201,6 +201,20 @@ static void server_object_move_tick(OBJECT_ITEM_TYPE item)
 
 }
 
+static void server_object_print_all_tank_hp()
+{
+    for (auto it = g_objectMap.begin(); it != g_objectMap.end(); ++it)
+    {
+        Object *pObject = &it->second;
+        if (pObject->type() != ObjType::OBJ_TYPE_TANK)
+        {
+            continue;
+        }
+        cout << "tank " << pObject->objid() << " hp is: " << pObject->mutable_tank()->
+            mutable_battleinfo()->hp() << endl;
+    }
+}
+
 static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
 {
     Object *object = &item.second;
@@ -246,6 +260,7 @@ static void server_object_combat_tick(OBJECT_ITEM_TYPE item)
                         __FUNCTION__, nearbyObj->objid(), relatedObj->objid(), 
                         object->objid());
                     server_object_set_hp(*nearbyObj, iCurHp);
+                    server_object_print_all_tank_hp();
                     iIsHit = 1;
                 }
             }

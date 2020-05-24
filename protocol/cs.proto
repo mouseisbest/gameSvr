@@ -38,8 +38,6 @@ message CSMoveS {
     Point     Pos       = 2;
 }
 
-message CSFireC {
-}
 
 message CSBattleInfo {
     int64       HP                  = 1;
@@ -89,7 +87,6 @@ message CSMessageC {
     oneof Data {
         CSLoginC        LoginInfo       = 10;
         CSMoveC         Move            = 11;
-        CSFireC         Fire            = 12;
     }
 }
 
