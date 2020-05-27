@@ -14,5 +14,6 @@ enum Direction {
 enum AttrType {
     ATTR_HP                 = 0;
     ATTR_DAMAGE             = 1;
-    ATTR_MAX                = 2;
+    ATTR_DEFENSE            = 2;
+    ATTR_MAX                = 3;
 }
