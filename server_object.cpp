@@ -396,6 +396,8 @@ static void server_object_to_cs_object(Object &obj, CSObject &csObj)
     case ObjType::OBJ_TYPE_BULLET:
         {
             csObj.mutable_bullet()->set_dir(obj.mutable_position()->dir());
+            csObj.mutable_bullet()->set_parentid(obj.mutable_bullet()->linkobj());
+            
             break;
         }
     default:

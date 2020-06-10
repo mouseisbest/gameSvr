@@ -50,6 +50,7 @@ message CSTank {
     
 message CSBullet {
     Direction           Dir         = 1;
+    int64               ParentID    = 2;
 }
 
 message CSObject {
